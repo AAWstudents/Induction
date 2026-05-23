@@ -24,7 +24,6 @@
             position: relative;
         }
 
-        /* Background blur elements */
         .bg-blur {
             position: fixed;
             border-radius: 50%;
@@ -49,7 +48,6 @@
             right: -50px;
         }
 
-        /* Main container */
         .container {
             position: relative;
             z-index: 10;
@@ -58,7 +56,6 @@
             padding: 20px;
         }
 
-        /* Welcome screen */
         .welcome-screen {
             display: flex;
             flex-direction: column;
@@ -69,7 +66,6 @@
             display: none;
         }
 
-        /* Login screen */
         .login-screen {
             display: none;
         }
@@ -78,7 +74,6 @@
             display: block;
         }
 
-        /* Frosted card */
         .card {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.4);
@@ -107,7 +102,6 @@
             font-weight: 300;
         }
 
-        /* Welcome message */
         .welcome-message {
             text-align: center;
             color: #666666;
@@ -126,7 +120,6 @@
             font-weight: 300;
         }
 
-        /* Option buttons */
         .option-buttons {
             display: flex;
             flex-direction: column;
@@ -158,7 +151,6 @@
             transform: translateY(0);
         }
 
-        /* Back button */
         .back-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -179,7 +171,6 @@
             color: #777777;
         }
 
-        /* Role selector */
         .role-selector {
             display: flex;
             gap: 12px;
@@ -187,6 +178,10 @@
             background: rgba(255, 255, 255, 0.1);
             padding: 6px;
             border-radius: 12px;
+        }
+
+        .role-selector.hidden {
+            display: none;
         }
 
         .role-btn {
@@ -213,7 +208,6 @@
             color: #888888;
         }
 
-        /* Form group */
         .form-group {
             margin-bottom: 18px;
         }
@@ -251,24 +245,6 @@
             box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.1);
         }
 
-        /* Admin notes */
-        .admin-note {
-            background: rgba(100, 150, 255, 0.1);
-            border: 1px solid rgba(100, 150, 255, 0.2);
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 18px;
-            font-size: 0.8rem;
-            color: #888888;
-            display: none;
-            font-weight: 400;
-        }
-
-        .admin-note.show {
-            display: block;
-        }
-
-        /* Login button */
         .login-btn {
             width: 100%;
             padding: 11px;
@@ -295,16 +271,6 @@
             transform: translateY(0);
         }
 
-        /* Footer text */
-        .footer-text {
-            text-align: center;
-            margin-top: 18px;
-            font-size: 0.75rem;
-            color: #dddddd;
-            font-weight: 300;
-        }
-
-        /* Animations */
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -316,7 +282,6 @@
             }
         }
 
-        /* Responsive */
         @media (max-width: 480px) {
             .card {
                 padding: 35px 25px;
@@ -333,23 +298,20 @@
     <div class="bg-blur blur-2"></div>
 
     <div class="container">
-        <!-- Welcome Screen -->
         <div class="welcome-screen" id="welcomeScreen">
             <div class="card">
                 <div class="welcome-message">
                     <h2>Induction</h2>
                     <p>Let's Get Started!</p>
                 </div>
-                
-                <div class="option-buttons">
-                    <button class="option-btn" onclick="goToLogin('login')">Login</button>
-                    <button class="option-btn" onclick="goToLogin('signup')">Sign Up</button>
-                </div>
 
+                <div class="option-buttons">
+                    <button class="option-btn" onclick="goToScreen('login')">Login</button>
+                    <button class="option-btn" onclick="goToScreen('signup')">Sign Up</button>
+                </div>
             </div>
         </div>
 
-        <!-- Login/Signup Screen -->
         <div class="login-screen" id="loginScreen">
             <button class="back-btn" onclick="goBack()">← Back</button>
 
@@ -357,14 +319,17 @@
                 <h1 id="screenTitle">Login</h1>
                 <p id="screenSubtitle">Welcome Back</p>
 
-                <!-- Role selector -->
-                <div class="role-selector">
-                    <button class="role-btn active" onclick="selectRole('student')">Student</button>
-                    <button class="role-btn" onclick="selectRole('admin')">Admin</button>
+                <div class="role-selector" id="roleSelector">
+                    <button class="role-btn active" type="button" onclick="selectRole('student', this)">Student</button>
+                    <button class="role-btn" type="button" onclick="selectRole('admin', this)">Admin</button>
                 </div>
 
-                <!-- Login form -->
-                <form id="loginForm" onsubmit="handleLogin(event)">
+                <form id="loginForm" onsubmit="handleSubmit(event)">
+                    <div class="form-group" id="nameGroup" style="display: none;">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name">
+                    </div>
+
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" placeholder="Enter your email" required>
@@ -375,92 +340,106 @@
                         <input type="password" id="password" placeholder="Enter your password" required>
                     </div>
 
-                    <div class="form-group" id="nameGroup" style="display: none;">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" placeholder="Enter your full name">
-                    </div>
-
                     <button type="submit" class="login-btn" id="submitBtn">Login</button>
                 </form>
-
             </div>
         </div>
     </div>
 
     <script>
         let currentRole = 'student';
-        let currentMode = 'login'; // 'login' or 'signup'
+        let currentMode = 'login';
 
-        function goToLogin(mode) {
+        function resetForm() {
+            document.getElementById('loginForm').reset();
+        }
+
+        function setStudentAsDefaultRole() {
+            currentRole = 'student';
+
+            document.querySelectorAll('.role-btn').forEach((btn) => {
+                btn.classList.remove('active');
+            });
+
+            document.querySelector('.role-btn').classList.add('active');
+        }
+
+        function goToScreen(mode) {
             currentMode = mode;
+            resetForm();
+
             document.getElementById('welcomeScreen').classList.add('hidden');
             document.getElementById('loginScreen').classList.add('active');
-            
+
+            const screenTitle = document.getElementById('screenTitle');
+            const screenSubtitle = document.getElementById('screenSubtitle');
+            const nameGroup = document.getElementById('nameGroup');
+            const submitBtn = document.getElementById('submitBtn');
+            const roleSelector = document.getElementById('roleSelector');
+
             if (mode === 'signup') {
-                document.getElementById('screenTitle').textContent = 'Sign Up';
-                document.getElementById('screenSubtitle').textContent = 'Create Account';
-                document.getElementById('nameGroup').style.display = 'block';
-                document.getElementById('submitBtn').textContent = 'Sign Up';
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-                document.getElementById('name').value = '';
+                screenTitle.textContent = 'Student Sign Up';
+                screenSubtitle.textContent = 'Create Your Student Account';
+                nameGroup.style.display = 'block';
+                submitBtn.textContent = 'Sign Up';
+                roleSelector.classList.add('hidden');
+                setStudentAsDefaultRole();
             } else {
-                document.getElementById('screenTitle').textContent = 'Login';
-                document.getElementById('screenSubtitle').textContent = 'Welcome Back';
-                document.getElementById('nameGroup').style.display = 'none';
-                document.getElementById('submitBtn').textContent = 'Login';
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
+                screenTitle.textContent = 'Login';
+                screenSubtitle.textContent = 'Student or Admin Login';
+                nameGroup.style.display = 'none';
+                submitBtn.textContent = 'Login';
+                roleSelector.classList.remove('hidden');
+                setStudentAsDefaultRole();
             }
         }
 
         function goBack() {
             document.getElementById('loginScreen').classList.remove('active');
             document.getElementById('welcomeScreen').classList.remove('hidden');
-            currentRole = 'student';
-            document.querySelectorAll('.role-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelectorAll('.role-btn')[0].classList.add('active');
+            setStudentAsDefaultRole();
+            resetForm();
         }
 
-        function selectRole(role) {
-            currentRole = role;
-            
-            // Update button states
-            document.querySelectorAll('.role-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            // Show/hide admin note
-            const adminNote = document.getElementById('adminNote');
-            if (role === 'admin') {
-                adminNote.classList.add('show');
-            } else {
-                adminNote.classList.remove('show');
+        function selectRole(role, buttonElement) {
+            if (currentMode !== 'login') {
+                return;
             }
+
+            currentRole = role;
+
+            document.querySelectorAll('.role-btn').forEach((btn) => {
+                btn.classList.remove('active');
+            });
+
+            buttonElement.classList.add('active');
         }
 
-        function handleLogin(event) {
+        function handleSubmit(event) {
             event.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const role = currentRole;
-            const name = currentMode === 'signup' ? document.getElementById('name').value : '';
 
-            // Placeholder - replace with your backend call
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const name = document.getElementById('name').value.trim();
+
             if (currentMode === 'signup') {
-                console.log(`Sign up attempt: ${name}, ${email} as ${role}`);
-                alert(`Sign up successful for ${email}. Welcome to Induction!`);
-            } else {
-                console.log(`Login attempt: ${email} as ${role}`);
-                if (role === 'admin') {
-                    alert(`Admin login successful for ${email}. Redirecting to admin dashboard...`);
-                } else {
-                    alert(`Student login successful for ${email}. Redirecting to induction...`);
+                if (!name) {
+                    alert('Please enter your full name.');
+                    return;
                 }
+
+                const role = 'student';
+                console.log(`Sign up attempt: ${name}, ${email} as ${role}`);
+                alert(`Student sign up successful for ${email}. Welcome to Induction!`);
+                return;
+            }
+
+            console.log(`Login attempt: ${email} as ${currentRole}`);
+
+            if (currentRole === 'admin') {
+                alert(`Admin login successful for ${email}. Redirecting to admin dashboard...`);
+            } else {
+                alert(`Student login successful for ${email}. Redirecting to induction...`);
             }
         }
     </script>
