@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Induction - Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <style>
         * {
             margin: 0;
@@ -52,7 +52,7 @@
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 380px;
+            max-width: 420px;
             padding: 20px;
         }
 
@@ -97,7 +97,7 @@
         .card p {
             text-align: center;
             color: #999999;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             font-size: 0.9rem;
             font-weight: 300;
         }
@@ -126,7 +126,9 @@
             gap: 12px;
         }
 
-        .option-btn {
+        .option-btn,
+        .login-btn,
+        .secondary-btn {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
@@ -141,14 +143,28 @@
             backdrop-filter: blur(10px);
         }
 
-        .option-btn:hover {
+        .option-btn:hover,
+        .login-btn:hover,
+        .secondary-btn:hover {
             background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
             box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
             transform: translateY(-2px);
         }
 
-        .option-btn:active {
+        .option-btn:active,
+        .login-btn:active,
+        .secondary-btn:active {
             transform: translateY(0);
+        }
+
+        .secondary-btn {
+            margin-top: 12px;
+            padding: 11px;
+            display: none;
+        }
+
+        .secondary-btn.show {
+            display: block;
         }
 
         .back-btn {
@@ -164,6 +180,7 @@
             transition: all 0.3s ease;
             font-family: 'Poppins', sans-serif;
             font-weight: 500;
+            width: 100%;
         }
 
         .back-btn:hover {
@@ -245,30 +262,20 @@
             box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.1);
         }
 
-        .login-btn {
-            width: 100%;
-            padding: 11px;
-            background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
-            border: 1px solid rgba(255, 255, 255, 0.4);
+        .status-box {
+            display: none;
+            margin-bottom: 18px;
+            padding: 12px;
             border-radius: 10px;
+            font-size: 0.85rem;
             color: #666666;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-            backdrop-filter: blur(10px);
-            margin-top: 5px;
+            background: rgba(100, 150, 255, 0.08);
+            border: 1px solid rgba(100, 150, 255, 0.16);
+            text-align: center;
         }
 
-        .login-btn:hover {
-            background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
-            box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
+        .status-box.show {
+            display: block;
         }
 
         @keyframes slideUp {
@@ -276,6 +283,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -306,42 +314,53 @@
                 </div>
 
                 <div class="option-buttons">
-                    <button class="option-btn" onclick="goToScreen('login')">Login</button>
-                    <button class="option-btn" onclick="goToScreen('signup')">Sign Up</button>
+                    <button class="option-btn" type="button" onclick="goToScreen('login')">Login</button>
+                    <button class="option-btn" type="button" onclick="goToScreen('signup')">Sign Up</button>
                 </div>
             </div>
         </div>
 
         <div class="login-screen" id="loginScreen">
-            <button class="back-btn" onclick="goBack()">← Back</button>
+            <button class="back-btn" type="button" onclick="goBack()">← Back</button>
 
             <div class="card">
                 <h1 id="screenTitle">Login</h1>
                 <p id="screenSubtitle">Welcome Back</p>
+
+                <div class="status-box" id="sessionStatus"></div>
 
                 <div class="role-selector" id="roleSelector">
                     <button class="role-btn active" type="button" onclick="selectRole('student', this)">Student</button>
                     <button class="role-btn" type="button" onclick="selectRole('admin', this)">Admin</button>
                 </div>
 
-                <form id="loginForm" onsubmit="handleSubmit(event)">
+                <form id="authForm" onsubmit="handleSubmit(event)">
                     <div class="form-group" id="nameGroup" style="display: none;">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" placeholder="Enter your full name">
+                        <input type="text" id="name" placeholder="Enter full name" />
                     </div>
 
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="Enter your email" required>
+                        <input type="email" id="email" placeholder="Enter email" required />
                     </div>
 
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <input type="password" id="password" placeholder="Enter password" required />
                     </div>
 
                     <button type="submit" class="login-btn" id="submitBtn">Login</button>
                 </form>
+
+                <button
+                    class="secondary-btn"
+                    id="createAdminBtn"
+                    type="button"
+                    onclick="goToScreen('create-admin')"
+                >
+                    Create Admin Account
+                </button>
             </div>
         </div>
     </div>
@@ -349,19 +368,57 @@
     <script>
         let currentRole = 'student';
         let currentMode = 'login';
+        let loggedInAdminEmail = null;
+
+        const registeredAdmins = [
+            {
+                name: 'System Admin',
+                email: 'admin@induction.com',
+                password: 'admin123'
+            }
+        ];
 
         function resetForm() {
-            document.getElementById('loginForm').reset();
+            document.getElementById('authForm').reset();
         }
 
         function setStudentAsDefaultRole() {
             currentRole = 'student';
 
-            document.querySelectorAll('.role-btn').forEach((btn) => {
-                btn.classList.remove('active');
+            document.querySelectorAll('.role-btn').forEach((button) => {
+                button.classList.remove('active');
             });
 
-            document.querySelector('.role-btn').classList.add('active');
+            const firstRoleButton = document.querySelector('.role-btn');
+            if (firstRoleButton) {
+                firstRoleButton.classList.add('active');
+            }
+        }
+
+        function showSessionStatus(message = '') {
+            const statusBox = document.getElementById('sessionStatus');
+
+            if (!message) {
+                statusBox.textContent = '';
+                statusBox.classList.remove('show');
+                return;
+            }
+
+            statusBox.textContent = message;
+            statusBox.classList.add('show');
+        }
+
+        function updateAdminControls() {
+            const createAdminBtn = document.getElementById('createAdminBtn');
+
+            if (loggedInAdminEmail) {
+                createAdminBtn.classList.add('show');
+                showSessionStatus(`Logged in as admin: ${loggedInAdminEmail}`);
+                return;
+            }
+
+            createAdminBtn.classList.remove('show');
+            showSessionStatus('');
         }
 
         function goToScreen(mode) {
@@ -384,21 +441,43 @@
                 submitBtn.textContent = 'Sign Up';
                 roleSelector.classList.add('hidden');
                 setStudentAsDefaultRole();
-            } else {
-                screenTitle.textContent = 'Login';
-                screenSubtitle.textContent = 'Student or Admin Login';
-                nameGroup.style.display = 'none';
-                submitBtn.textContent = 'Login';
-                roleSelector.classList.remove('hidden');
-                setStudentAsDefaultRole();
+                updateAdminControls();
+                return;
             }
+
+            if (mode === 'create-admin') {
+                if (!loggedInAdminEmail) {
+                    alert('Only a registered admin who is currently logged in can create another admin account.');
+                    goToScreen('login');
+                    return;
+                }
+
+                screenTitle.textContent = 'Create Admin';
+                screenSubtitle.textContent = 'Registered admins can add another admin';
+                nameGroup.style.display = 'block';
+                submitBtn.textContent = 'Create Admin';
+                roleSelector.classList.add('hidden');
+                currentRole = 'admin';
+                updateAdminControls();
+                return;
+            }
+
+            screenTitle.textContent = 'Login';
+            screenSubtitle.textContent = 'Student or Admin Login';
+            nameGroup.style.display = 'none';
+            submitBtn.textContent = 'Login';
+            roleSelector.classList.remove('hidden');
+            setStudentAsDefaultRole();
+            updateAdminControls();
         }
 
         function goBack() {
             document.getElementById('loginScreen').classList.remove('active');
             document.getElementById('welcomeScreen').classList.remove('hidden');
+            currentMode = 'login';
             setStudentAsDefaultRole();
             resetForm();
+            updateAdminControls();
         }
 
         function selectRole(role, buttonElement) {
@@ -408,11 +487,77 @@
 
             currentRole = role;
 
-            document.querySelectorAll('.role-btn').forEach((btn) => {
-                btn.classList.remove('active');
+            document.querySelectorAll('.role-btn').forEach((button) => {
+                button.classList.remove('active');
             });
 
             buttonElement.classList.add('active');
+        }
+
+        function findAdminByEmail(email) {
+            return registeredAdmins.find(
+                (admin) => admin.email.toLowerCase() === email.toLowerCase()
+            );
+        }
+
+        function handleStudentSignup(email, password, name) {
+            if (!name) {
+                alert('Please enter your full name.');
+                return;
+            }
+
+            console.log(`Student sign up attempt: ${name}, ${email}`);
+            alert(`Student sign up successful for ${email}.`);
+            goToScreen('login');
+        }
+
+        function handleLogin(email, password) {
+            if (currentRole === 'admin') {
+                const admin = findAdminByEmail(email);
+
+                if (!admin || admin.password !== password) {
+                    alert('Admin login failed. Only registered admins can log in.');
+                    return;
+                }
+
+                loggedInAdminEmail = admin.email;
+                console.log(`Admin login successful: ${email}`);
+                alert(`Admin login successful for ${email}.`);
+                goToScreen('login');
+                return;
+            }
+
+            loggedInAdminEmail = null;
+            console.log(`Student login successful: ${email}`);
+            alert(`Student login successful for ${email}. Redirecting to induction...`);
+            goToScreen('login');
+        }
+
+        function handleCreateAdmin(email, password, name) {
+            if (!loggedInAdminEmail) {
+                alert('Only a logged-in registered admin can create another admin account.');
+                return;
+            }
+
+            if (!name) {
+                alert('Please enter the new admin’s full name.');
+                return;
+            }
+
+            if (findAdminByEmail(email)) {
+                alert('An admin account with this email already exists.');
+                return;
+            }
+
+            registeredAdmins.push({
+                name,
+                email,
+                password
+            });
+
+            console.log(`New admin created by ${loggedInAdminEmail}: ${email}`);
+            alert(`Admin account created successfully for ${email}.`);
+            goToScreen('login');
         }
 
         function handleSubmit(event) {
@@ -423,25 +568,19 @@
             const name = document.getElementById('name').value.trim();
 
             if (currentMode === 'signup') {
-                if (!name) {
-                    alert('Please enter your full name.');
-                    return;
-                }
-
-                const role = 'student';
-                console.log(`Sign up attempt: ${name}, ${email} as ${role}`);
-                alert(`Student sign up successful for ${email}. Welcome to Induction!`);
+                handleStudentSignup(email, password, name);
                 return;
             }
 
-            console.log(`Login attempt: ${email} as ${currentRole}`);
-
-            if (currentRole === 'admin') {
-                alert(`Admin login successful for ${email}. Redirecting to admin dashboard...`);
-            } else {
-                alert(`Student login successful for ${email}. Redirecting to induction...`);
+            if (currentMode === 'create-admin') {
+                handleCreateAdmin(email, password, name);
+                return;
             }
+
+            handleLogin(email, password);
         }
+
+        updateAdminControls();
     </script>
 </body>
 </html>
