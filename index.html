@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Induction - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -18,7 +19,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             overflow: hidden;
             position: relative;
         }
@@ -72,16 +73,18 @@
         .card h1 {
             font-size: 2rem;
             margin-bottom: 10px;
-            color: rgba(50, 50, 100, 0.9);
+            color: #666666;
             text-align: center;
             font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .card p {
             text-align: center;
-            color: rgba(80, 80, 120, 0.7);
+            color: #999999;
             margin-bottom: 35px;
             font-size: 0.95rem;
+            font-weight: 300;
         }
 
         /* Role selector */
@@ -102,20 +105,20 @@
             cursor: pointer;
             border-radius: 10px;
             font-size: 0.9rem;
-            font-weight: 600;
-            color: rgba(80, 80, 120, 0.6);
+            font-weight: 500;
+            color: #bbbbbb;
             transition: all 0.3s ease;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         .role-btn.active {
             background: rgba(255, 255, 255, 0.3);
-            color: rgba(50, 50, 100, 0.9);
+            color: #666666;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .role-btn:hover {
-            color: rgba(50, 50, 100, 0.8);
+            color: #888888;
         }
 
         /* Form group */
@@ -126,9 +129,9 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: rgba(50, 50, 100, 0.8);
+            color: #777777;
             font-size: 0.9rem;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .form-group input {
@@ -138,14 +141,15 @@
             background: rgba(255, 255, 255, 0.15);
             border-radius: 10px;
             font-size: 0.95rem;
-            color: rgba(50, 50, 100, 0.9);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #666666;
+            font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            font-weight: 400;
         }
 
         .form-group input::placeholder {
-            color: rgba(80, 80, 120, 0.5);
+            color: #cccccc;
         }
 
         .form-group input:focus {
@@ -163,8 +167,9 @@
             padding: 12px;
             margin-bottom: 20px;
             font-size: 0.85rem;
-            color: rgba(50, 80, 150, 0.8);
+            color: #888888;
             display: none;
+            font-weight: 400;
         }
 
         .admin-note.show {
@@ -178,12 +183,12 @@
             background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
             border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 10px;
-            color: rgba(50, 50, 100, 0.9);
+            color: #666666;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             backdrop-filter: blur(10px);
         }
 
@@ -202,7 +207,8 @@
             text-align: center;
             margin-top: 20px;
             font-size: 0.85rem;
-            color: rgba(80, 80, 120, 0.6);
+            color: #cccccc;
+            font-weight: 300;
         }
 
         /* Animations */
