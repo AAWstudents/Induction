@@ -1,454 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Induction - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+       
+            * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-        width: 100%;
-        height: 100vh;
-        background: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Poppins', sans-serif;
-        overflow: hidden;
-        position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+    padding: 20px;
+}
+
+/* =========================
+   BACKGROUND BLURS
+========================= */
+
+.bg-blur {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.3;
+    z-index: 1;
+}
+
+.blur-1 {
+    width: 420px;
+    height: 420px;
+    background: rgba(100, 150, 255, 0.2);
+    top: -180px;
+    left: -120px;
+}
+
+.blur-2 {
+    width: 380px;
+    height: 380px;
+    background: rgba(180, 120, 255, 0.18);
+    bottom: -120px;
+    right: -80px;
+}
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
+.container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 420px;
+}
+
+/* =========================
+   WELCOME / LOGIN SCREENS
+========================= */
+
+.welcome-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.welcome-screen.hidden {
+    display: none;
+}
+
+.login-screen {
+    display: none;
+}
+
+.login-screen.active {
+    display: block;
+}
+
+/* =========================
+   GLASS CARD
+========================= */
+
+.card {
+    background: rgba(255, 255, 255, 0.22);
+
+    border: 1px solid rgba(255, 255, 255, 0.4);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border-radius: 24px;
+
+    padding: 40px 35px;
+
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+    animation: slideUp 0.5s ease;
+}
+
+/* =========================
+   TITLES
+========================= */
+
+.card h1 {
+    font-size: 1.9rem;
+    color: #666666;
+    text-align: center;
+    margin-bottom: 6px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.card p {
+    text-align: center;
+    color: #999999;
+    margin-bottom: 28px;
+    font-size: 0.92rem;
+    font-weight: 300;
+}
+
+/* =========================
+   WELCOME MESSAGE
+========================= */
+
+.welcome-message {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.welcome-message h2 {
+    font-size: 1.8rem;
+    color: #666666;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.welcome-message p {
+    color: #999999;
+    font-size: 0.95rem;
+    font-weight: 300;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.option-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.option-btn,
+.login-btn,
+.admin-create-btn,
+.logout-btn {
+    width: 100%;
+
+    padding: 13px;
+
+    border-radius: 14px;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(100, 150, 255, 0.38),
+            rgba(170, 120, 255, 0.28)
+        );
+
+    color: #666666;
+
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+
+    font-family: 'Poppins', sans-serif;
+
+    backdrop-filter: blur(12px);
+}
+
+.option-btn:hover,
+.login-btn:hover,
+.admin-create-btn:hover,
+.logout-btn:hover {
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(100, 150, 255, 0.5),
+            rgba(170, 120, 255, 0.38)
+        );
+
+    box-shadow:
+        0 8px 24px rgba(100, 150, 255, 0.2);
+}
+
+.option-btn:active,
+.login-btn:active,
+.admin-create-btn:active,
+.logout-btn:active {
+    transform: scale(0.98);
+}
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.back-btn {
+    width: 100%;
+
+    margin-bottom: 16px;
+
+    padding: 11px;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    background: rgba(255, 255, 255, 0.12);
+
+    color: #888888;
+
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+
+    backdrop-filter: blur(10px);
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #666666;
+}
+
+/* =========================
+   FORM GROUPS
+========================= */
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #777777;
+
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    background: rgba(255, 255, 255, 0.15);
+
+    color: #666666;
+
+    font-size: 0.92rem;
+
+    font-family: 'Poppins', sans-serif;
+
+    transition: all 0.3s ease;
+
+    backdrop-filter: blur(10px);
+}
+
+.form-group input::placeholder {
+    color: #c5c5c5;
+}
+
+.form-group input:focus {
+    outline: none;
+
+    border-color: rgba(100, 150, 255, 0.5);
+
+    background: rgba(255, 255, 255, 0.25);
+
+    box-shadow:
+        0 0 0 4px rgba(100, 150, 255, 0.08);
+}
+
+/* =========================
+   SECURITY BANNER
+========================= */
+
+.security-banner {
+    width: 100%;
+
+    padding: 10px 14px;
+
+    margin-bottom: 18px;
+
+    border-radius: 12px;
+
+    background: rgba(255, 220, 120, 0.12);
+
+    border: 1px solid rgba(255, 220, 120, 0.25);
+
+    color: #b28700;
+
+    font-size: 0.8rem;
+    font-weight: 500;
+
+    text-align: center;
+}
+
+/* =========================
+   ADMIN DASHBOARD
+========================= */
+
+.admin-dashboard {
+    display: none;
+
+    margin-top: 20px;
+
+    animation: fadeIn 0.4s ease;
+}
+
+.admin-dashboard.active {
+    display: block;
+}
+
+/* =========================
+   ADMIN HEADER
+========================= */
+
+.admin-header {
+    margin-bottom: 22px;
+    text-align: center;
+}
+
+.admin-header h2 {
+    color: #666666;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.admin-header p {
+    color: #999999;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+/* =========================
+   ADMIN PANEL
+========================= */
+
+.admin-panel {
+    background: rgba(255, 255, 255, 0.14);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    backdrop-filter: blur(14px);
+}
+
+/* =========================
+   ADMIN USER CARD
+========================= */
+
+.admin-user-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 16px;
+
+    margin-bottom: 12px;
+
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.16);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    transition: all 0.3s ease;
+}
+
+.admin-user-card:hover {
+    transform: translateY(-2px);
+
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.admin-user-info h3 {
+    color: #666666;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.admin-user-info span {
+    color: #999999;
+    font-size: 0.78rem;
+}
+
+/* =========================
+   ROLE BADGES
+========================= */
+
+.role-badge {
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.72rem;
+    font-weight: 600;
+
+    background: rgba(100, 150, 255, 0.14);
+
+    color: #5b7fd6;
+
+    border: 1px solid rgba(100, 150, 255, 0.2);
+}
+
+.role-badge.superadmin {
+    background: rgba(255, 215, 120, 0.18);
+
+    color: #c58a00;
+
+    border: 1px solid rgba(255, 215, 120, 0.3);
+}
+
+/* =========================
+   DIVIDER
+========================= */
+
+.divider {
+    width: 100%;
+    height: 1px;
+
+    background: rgba(255, 255, 255, 0.18);
+
+    margin: 22px 0;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer-text {
+    text-align: center;
+
+    margin-top: 18px;
+
+    color: #d2d2d2;
+
+    font-size: 0.74rem;
+    font-weight: 300;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes slideUp {
+
+    from {
+        opacity: 0;
+        transform: translateY(28px);
     }
 
-    /* Background blur elements */
-    .bg-blur {
-        position: fixed;
-        border-radius: 50%;
-        filter: blur(100px);
-        opacity: 0.3;
-        z-index: 1;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
     }
 
-    .blur-1 {
-        width: 400px;
-        height: 400px;
-        background: rgba(100, 150, 255, 0.2);
-        top: -150px;
-        left: -100px;
+    to {
+        opacity: 1;
+    }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 14px;
     }
 
-    .blur-2 {
-        width: 350px;
-        height: 350px;
-        background: rgba(150, 100, 255, 0.15);
-        bottom: -80px;
-        right: -50px;
-    }
-
-    /* Main container */
-    .container {
-        position: relative;
-        z-index: 10;
-        width: 100%;
-        max-width: 380px;
-        padding: 20px;
-    }
-
-    /* Welcome screen */
-    .welcome-screen {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .welcome-screen.hidden {
-        display: none;
-    }
-
-    /* Login screen */
-    .login-screen {
-        display: none;
-    }
-
-    .login-screen.active {
-        display: block;
-    }
-
-    /* Frosted card */
     .card {
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border-radius: 20px;
-        padding: 40px 35px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-        animation: slideUp 0.6s ease-out;
+        padding: 34px 24px;
     }
 
     .card h1 {
-        font-size: 1.8rem;
-        margin-bottom: 5px;
-        color: #666666;
-        text-align: center;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-    }
-
-    .card p {
-        text-align: center;
-        color: #999999;
-        margin-bottom: 25px;
-        font-size: 0.9rem;
-        font-weight: 300;
-    }
-
-    /* Welcome message */
-    .welcome-message {
-        text-align: center;
-        color: #666666;
-        margin-bottom: 10px;
+        font-size: 1.6rem;
     }
 
     .welcome-message h2 {
-        font-size: 1.6rem;
-        font-weight: 700;
-        margin-bottom: 8px;
+        font-size: 1.55rem;
     }
 
-    .welcome-message p {
-        color: #999999;
-        font-size: 0.95rem;
-        font-weight: 300;
-    }
-
-    /* Option buttons */
-    .option-buttons {
-        display: flex;
+    .admin-user-card {
         flex-direction: column;
-        gap: 12px;
+        align-items: flex-start;
+        gap: 10px;
     }
-
-    .option-btn {
-        width: 100%;
-        padding: 14px;
-        background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 10px;
-        color: #666666;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: 'Poppins', sans-serif;
-        backdrop-filter: blur(10px);
-    }
-
-    .option-btn:hover {
-        background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
-        box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
-        transform: translateY(-2px);
-    }
-
-    .option-btn:active {
-        transform: translateY(0);
-    }
-
-    /* Back button */
-    .back-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #999999;
-        padding: 10px;
-        margin-bottom: 15px;
-        cursor: pointer;
-        text-align: center;
-        font-size: 0.9rem;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 500;
-    }
-
-    .back-btn:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: #777777;
-    }
-
-    /* Role selector */
-    .role-selector {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 25px;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 6px;
-        border-radius: 12px;
-    }
-
-    .role-btn {
-        flex: 1;
-        padding: 8px 12px;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: #bbbbbb;
-        transition: all 0.3s ease;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .role-btn.active {
-        background: rgba(255, 255, 255, 0.3);
-        color: #666666;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .role-btn:hover {
-        color: #888888;
-    }
-
-    /* Form group */
-    .form-group {
-        margin-bottom: 18px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 6px;
-        color: #777777;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-
-    .form-group input {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-        font-size: 0.9rem;
-        color: #666666;
-        font-family: 'Poppins', sans-serif;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-        font-weight: 400;
-    }
-
-    .form-group input::placeholder {
-        color: #cccccc;
-    }
-
-    .form-group input:focus {
-        outline: none;
-        border-color: rgba(100, 150, 255, 0.5);
-        background: rgba(255, 255, 255, 0.25);
-        box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.1);
-    }
-
-    /* Admin notes */
-    .admin-note {
-        background: rgba(100, 150, 255, 0.1);
-        border: 1px solid rgba(100, 150, 255, 0.2);
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 18px;
-        font-size: 0.8rem;
-        color: #888888;
-        display: none;
-        font-weight: 400;
-    }
-
-    .admin-note.show {
-        display: block;
-    }
-
-    /* Login button */
-    .login-btn {
-        width: 100%;
-        padding: 11px;
-        background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 10px;
-        color: #666666;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: 'Poppins', sans-serif;
-        backdrop-filter: blur(10px);
-        margin-top: 5px;
-    }
-
-    .login-btn:hover {
-        background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
-        box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
-        transform: translateY(-2px);
-    }
-
-    .login-btn:active {
-        transform: translateY(0);
-    }
-
-    /* Footer text */
-    .footer-text {
-        text-align: center;
-        margin-top: 18px;
-        font-size: 0.75rem;
-        color: #dddddd;
-        font-weight: 300;
-    }
-
-    /* Animations */
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Responsive */
-    @media (max-width: 480px) {
-        .card {
-            padding: 35px 25px;
-        }
-
-        .card h1 {
-            font-size: 1.5rem;
-        }
-    }
-</style>
-
-<div class="container">
-    <!-- Welcome Screen -->
-    <div class="welcome-screen" id="welcomeScreen">
-        <div class="card">
-            <div class="welcome-message">
-                <h2>Induction</h2>
-                <p>Let's Get Started!</p>
-            </div>
-            
-            <div class="option-buttons">
-                <button class="option-btn" onclick="goToLogin('login')">Login</button>
-                <button class="option-btn" onclick="goToLogin('signup')">Sign Up</button>
-            </div>
-
-            <div class="footer-text">
-                © 2026 Induction
-            </div>
-        </div>
-    </div>
-
-    <!-- Login/Signup Screen -->
-    <div class="login-screen" id="loginScreen">
-        <button class="back-btn" onclick="goBack()">← Back</button>
-
-        <div class="card">
-            <h1 id="screenTitle">Login</h1>
-            <p id="screenSubtitle">Welcome Back</p>
-
-            <!-- Role selector -->
-            <div class="role-selector">
-                <button class="role-btn active" onclick="selectRole('student')">Student</button>
-                <button class="role-btn" onclick="selectRole('admin')">Admin</button>
-            </div>
-
-            <!-- Login form -->
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
-                </div>
-
-                <div class="form-group" id="nameGroup" style="display: none;">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" placeholder="Enter your full name">
-                </div>
-
-                <button type="submit" class="login-btn" id="submitBtn">Login</button>
-            </form>
-
-            <div class="footer-text">
-                © 2026 Induction
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let currentRole = 'student';
-    let currentMode = 'login'; // 'login' or 'signup'
-
-    function goToLogin(mode) {
-        currentMode = mode;
-        document.getElementById('welcomeScreen').classList.add('hidden');
-        document.getElementById('loginScreen').classList.add('active');
-        
-        if (mode === 'signup') {
-            document.getElementById('screenTitle').textContent = 'Sign Up';
-            document.getElementById('screenSubtitle').textContent = 'Create Account';
-            document.getElementById('nameGroup').style.display = 'block';
-            document.getElementById('submitBtn').textContent = 'Sign Up';
-            document.getElementById('email').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('name').value = '';
-        } else {
-            document.getElementById('screenTitle').textContent = 'Login';
-            document.getElementById('screenSubtitle').textContent = 'Welcome Back';
-            document.getElementById('nameGroup').style.display = 'none';
-            document.getElementById('submitBtn').textContent = 'Login';
-            document.getElementById('email').value = '';
-            document.getElementById('password').value = '';
-        }
-    }
-
-    function goBack() {
-        document.getElementById('loginScreen').classList.remove('active');
-        document.getElementById('welcomeScreen').classList.remove('hidden');
-        currentRole = 'student';
-        document.querySelectorAll('.role-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.querySelectorAll('.role-btn')[0].classList.add('active');
-    }
-
-    function selectRole(role) {
-        currentRole = role;
-        
-        // Update button states
-        document.querySelectorAll('.role-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        event.target.classList.add('active');
-
-        // Show/hide admin note
-        const adminNote = document.getElementById('adminNote');
-        if (role === 'admin') {
-            adminNote.classList.add('show');
-        } else {
-            adminNote.classList.remove('show');
-        }
-    }
-
-    function handleLogin(event) {
-        event.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const role = currentRole;
-        const name = currentMode === 'signup' ? document.getElementById('name').value : '';
-
-        // Placeholder - replace with your backend call
-        if (currentMode === 'signup') {
-            console.log(`Sign up attempt: ${name}, ${email} as ${role}`);
-            alert(`Sign up successful for ${email}. Welcome to Induction!`);
-        } else {
-            console.log(`Login attempt: ${email} as ${role}`);
-            if (role === 'admin') {
-                alert(`Admin login successful for ${email}. Redirecting to admin dashboard...`);
-            } else {
-                alert(`Student login successful for ${email}. Redirecting to induction...`);
-            }
-        }
-    }
-</script>
+}
+    </script>
+</body>
+</html>
