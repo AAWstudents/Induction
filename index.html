@@ -1,22 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Induction - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background blur elements */
+        .bg-blur {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .blur-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(100, 150, 255, 0.2);
+            top: -150px;
+            left: -100px;
+        }
+
+        .blur-2 {
+            width: 350px;
+            height: 350px;
+            background: rgba(150, 100, 255, 0.15);
+            bottom: -80px;
+            right: -50px;
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        /* Frosted card */
+        .card {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .card h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: rgba(50, 50, 100, 0.9);
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .card p {
+            text-align: center;
+            color: rgba(80, 80, 120, 0.7);
+            margin-bottom: 35px;
+            font-size: 0.95rem;
+        }
+
+        /* Role selector */
+        .role-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(80, 80, 120, 0.6);
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .role-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            color: rgba(50, 50, 100, 0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .role-btn:hover {
+            color: rgba(50, 50, 100, 0.8);
+        }
+
+        /* Form group */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(50, 50, 100, 0.8);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: rgba(50, 50, 100, 0.9);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(80, 80, 120, 0.5);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(100, 150, 255, 0.5);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.1);
+        }
+
+        /* Admin notes */
+        .admin-note {
+            background: rgba(100, 150, 255, 0.1);
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: rgba(50, 80, 150, 0.8);
+            display: none;
+        }
+
+        .admin-note.show {
+            display: block;
+        }
+
+        /* Login button */
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            color: rgba(50, 50, 100, 0.9);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
+            box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Footer text */
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: rgba(80, 80, 120, 0.6);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .card {
+                padding: 40px 25px;
+            }
+
+            .card h1 {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="bg-blur blur-1"></div>
+    <div class="bg-blur blur-2"></div>
 
-  <div class="background-blur blur-1"></div>
-  <div class="background-blur blur-2"></div>
+    <div class="container">
+        <div class="card">
+            <h1>Induction</h1>
+            <p>Welcome Back</p>
 
-  <main class="hero">
-    <a href="home.html" class="welcome-card">
-      <span class="shine"></span>
-      <h1>WELCOME</h1>
-    </a>
-  </main>
+            <!-- Role selector -->
+            <div class="role-selector">
+                <button class="role-btn active" onclick="selectRole('student')">Student</button>
+                <button class="role-btn" onclick="selectRole('admin')">Admin</button>
+            </div>
 
+            <!-- Admin note -->
+            <div class="admin-note" id="adminNote">
+                ⚙️ Admin account with edit rights
+            </div>
+
+            <!-- Login form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+
+            <div class="footer-text">
+                © 2026 Induction. All rights reserved.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRole = 'student';
+
+        function selectRole(role) {
+            currentRole = role;
+            
+            // Update button states
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Show/hide admin note
+            const adminNote = document.getElementById('adminNote');
+            if (role === 'admin') {
+                adminNote.classList.add('show');
+            } else {
+                adminNote.classList.remove('show');
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = currentRole;
+
+            // Placeholder - replace with your backend call
+            console.log(`Login attempt: ${email} as ${role}`);
+            
+            // Example: redirect to dashboard
+            if (role === 'admin') {
+                alert(`Admin login successful for ${email}. Redirecting to admin dashboard...`);
+                // window.location.href = '/admin-dashboard';
+            } else {
+                alert(`Student login successful for ${email}. Redirecting to induction...`);
+                // window.location.href = '/induction';
+            }
+        }
+    </script>
 </body>
 </html>
