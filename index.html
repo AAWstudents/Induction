@@ -58,6 +58,26 @@
             padding: 20px;
         }
 
+        /* Welcome screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .welcome-screen.hidden {
+            display: none;
+        }
+
+        /* Login screen */
+        .login-screen {
+            display: none;
+        }
+
+        .login-screen.active {
+            display: block;
+        }
+
         /* Frosted card */
         .card {
             background: rgba(255, 255, 255, 0.2);
@@ -85,6 +105,78 @@
             margin-bottom: 25px;
             font-size: 0.9rem;
             font-weight: 300;
+        }
+
+        /* Welcome message */
+        .welcome-message {
+            text-align: center;
+            color: #666666;
+            margin-bottom: 10px;
+        }
+
+        .welcome-message h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .welcome-message p {
+            color: #999999;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        /* Option buttons */
+        .option-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            color: #666666;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            backdrop-filter: blur(10px);
+        }
+
+        .option-btn:hover {
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
+            box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .option-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Back button */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #999999;
+            padding: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #777777;
         }
 
         /* Role selector */
@@ -241,44 +333,107 @@
     <div class="bg-blur blur-2"></div>
 
     <div class="container">
-        <div class="card">
-            <h1>Induction</h1>
-            <p>Welcome Back</p>
-
-            <!-- Role selector -->
-            <div class="role-selector">
-                <button class="role-btn active" onclick="selectRole('student')">Student</button>
-                <button class="role-btn" onclick="selectRole('admin')">Admin</button>
-            </div>
-
-            <!-- Admin note -->
-            <div class="admin-note" id="adminNote">
-                ⚙️ Admin account with edit rights
-            </div>
-
-            <!-- Login form -->
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email" required>
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="card">
+                <div class="welcome-message">
+                    <h2>Induction</h2>
+                    <p>Get Started Today</p>
+                </div>
+                
+                <div class="option-buttons">
+                    <button class="option-btn" onclick="goToLogin('login')">Login</button>
+                    <button class="option-btn" onclick="goToLogin('signup')">Sign Up</button>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
+                <div class="footer-text">
+                    © 2026 Induction. All rights reserved.
+                </div>
+            </div>
+        </div>
+
+        <!-- Login/Signup Screen -->
+        <div class="login-screen" id="loginScreen">
+            <button class="back-btn" onclick="goBack()">← Back</button>
+
+            <div class="card">
+                <h1 id="screenTitle">Login</h1>
+                <p id="screenSubtitle">Welcome Back</p>
+
+                <!-- Role selector -->
+                <div class="role-selector">
+                    <button class="role-btn active" onclick="selectRole('student')">Student</button>
+                    <button class="role-btn" onclick="selectRole('admin')">Admin</button>
                 </div>
 
-                <button type="submit" class="login-btn">Login</button>
-            </form>
+                <!-- Admin note -->
+                <div class="admin-note" id="adminNote">
+                    ⚙️ Admin account with edit rights
+                </div>
 
-            <div class="footer-text">
-                © 2026 Induction. All rights reserved.
+                <!-- Login form -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="form-group" id="nameGroup" style="display: none;">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name">
+                    </div>
+
+                    <button type="submit" class="login-btn" id="submitBtn">Login</button>
+                </form>
+
+                <div class="footer-text">
+                    © 2026 Induction. All rights reserved.
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         let currentRole = 'student';
+        let currentMode = 'login'; // 'login' or 'signup'
+
+        function goToLogin(mode) {
+            currentMode = mode;
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('active');
+            
+            if (mode === 'signup') {
+                document.getElementById('screenTitle').textContent = 'Sign Up';
+                document.getElementById('screenSubtitle').textContent = 'Create Account';
+                document.getElementById('nameGroup').style.display = 'block';
+                document.getElementById('submitBtn').textContent = 'Sign Up';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('name').value = '';
+            } else {
+                document.getElementById('screenTitle').textContent = 'Login';
+                document.getElementById('screenSubtitle').textContent = 'Welcome Back';
+                document.getElementById('nameGroup').style.display = 'none';
+                document.getElementById('submitBtn').textContent = 'Login';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        function goBack() {
+            document.getElementById('loginScreen').classList.remove('active');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            currentRole = 'student';
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.role-btn')[0].classList.add('active');
+        }
 
         function selectRole(role) {
             currentRole = role;
@@ -304,17 +459,19 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const role = currentRole;
+            const name = currentMode === 'signup' ? document.getElementById('name').value : '';
 
             // Placeholder - replace with your backend call
-            console.log(`Login attempt: ${email} as ${role}`);
-            
-            // Example: redirect to dashboard
-            if (role === 'admin') {
-                alert(`Admin login successful for ${email}. Redirecting to admin dashboard...`);
-                // window.location.href = '/admin-dashboard';
+            if (currentMode === 'signup') {
+                console.log(`Sign up attempt: ${name}, ${email} as ${role}`);
+                alert(`Sign up successful for ${email}. Welcome to Induction!`);
             } else {
-                alert(`Student login successful for ${email}. Redirecting to induction...`);
-                // window.location.href = '/induction';
+                console.log(`Login attempt: ${email} as ${role}`);
+                if (role === 'admin') {
+                    alert(`Admin login successful for ${email}. Redirecting to admin dashboard...`);
+                } else {
+                    alert(`Student login successful for ${email}. Redirecting to induction...`);
+                }
             }
         }
     </script>
