@@ -7,492 +7,461 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    width: 100%;
-    min-height: 100vh;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Poppins', sans-serif;
-    overflow-x: hidden;
-    position: relative;
-    padding: 20px;
-}
+        body {
+            width: 100%;
+            height: 100vh;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
 
-/* Background blur elements */
-.bg-blur {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(100px);
-    opacity: 0.3;
-    z-index: 1;
-}
+        /* Background blur elements */
+        .bg-blur {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            z-index: 1;
+        }
 
-.blur-1 {
-    width: 400px;
-    height: 400px;
-    background: rgba(100, 150, 255, 0.2);
-    top: -150px;
-    left: -100px;
-}
+        .blur-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(100, 150, 255, 0.2);
+            top: -150px;
+            left: -100px;
+        }
 
-.blur-2 {
-    width: 350px;
-    height: 350px;
-    background: rgba(150, 100, 255, 0.15);
-    bottom: -80px;
-    right: -50px;
-}
+        .blur-2 {
+            width: 350px;
+            height: 350px;
+            background: rgba(150, 100, 255, 0.15);
+            bottom: -80px;
+            right: -50px;
+        }
 
-/* Main container */
-.container {
-    position: relative;
-    z-index: 10;
-    width: 100%;
-    max-width: 380px;
-    padding: 20px;
-}
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 380px;
+            padding: 20px;
+        }
 
-/* Welcome screen */
-.welcome-screen {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+        /* Welcome screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-.welcome-screen.hidden {
-    display: none;
-}
+        .welcome-screen.hidden {
+            display: none;
+        }
 
-/* Login screen */
-.login-screen {
-    display: none;
-}
+        /* Login screen */
+        .login-screen {
+            display: none;
+        }
 
-.login-screen.active {
-    display: block;
-}
+        .login-screen.active {
+            display: block;
+        }
 
-/* Admin dashboard screen */
-.admin-dashboard {
-    display: none;
-}
+        /* Frosted card */
+        .card {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px 35px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            animation: slideUp 0.6s ease-out;
+        }
 
-.admin-dashboard.active {
-    display: block;
-}
+        .card h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: #666666;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
 
-/* Frosted card */
-.card {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-radius: 20px;
-    padding: 40px 35px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-    animation: slideUp 0.6s ease-out;
-}
+        .card p {
+            text-align: center;
+            color: #999999;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
 
-.card h1 {
-    font-size: 1.8rem;
-    margin-bottom: 5px;
-    color: #666666;
-    text-align: center;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-}
+        /* Welcome message */
+        .welcome-message {
+            text-align: center;
+            color: #666666;
+            margin-bottom: 10px;
+        }
 
-.card p {
-    text-align: center;
-    color: #999999;
-    margin-bottom: 25px;
-    font-size: 0.9rem;
-    font-weight: 300;
-}
+        .welcome-message h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
 
-/* Welcome message */
-.welcome-message {
-    text-align: center;
-    color: #666666;
-    margin-bottom: 10px;
-}
+        .welcome-message p {
+            color: #999999;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
 
-.welcome-message h2 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
+        /* Option buttons */
+        .option-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.welcome-message p {
-    color: #999999;
-    font-size: 0.95rem;
-    font-weight: 300;
-}
+        .option-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            color: #666666;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            backdrop-filter: blur(10px);
+        }
 
-/* Option buttons */
-.option-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+        .option-btn:hover {
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
+            box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
+            transform: translateY(-2px);
+        }
 
-.option-btn {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 10px;
-    color: #666666;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    backdrop-filter: blur(10px);
-}
+        .option-btn:active {
+            transform: translateY(0);
+        }
 
-.option-btn:hover {
-    background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
-    box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
-    transform: translateY(-2px);
-}
+        /* Back button */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #999999;
+            padding: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
 
-.option-btn:active {
-    transform: translateY(0);
-}
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #777777;
+        }
 
-/* Back button */
-.back-btn {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #999999;
-    padding: 10px;
-    margin-bottom: 15px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 0.9rem;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-}
+        /* Role selector */
+        .role-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px;
+            border-radius: 12px;
+        }
 
-.back-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #777777;
-}
+        .role-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #bbbbbb;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
 
-/* Role selector */
-.role-selector {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 25px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 6px;
-    border-radius: 12px;
-}
+        .role-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            color: #666666;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
 
-/* Use this class when public signup should only be student */
-.role-selector.student-only {
-    display: none;
-}
+        .role-btn:hover {
+            color: #888888;
+        }
 
-.role-btn {
-    flex: 1;
-    padding: 8px 12px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #bbbbbb;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-}
+        /* Form group */
+        .form-group {
+            margin-bottom: 18px;
+        }
 
-.role-btn.active {
-    background: rgba(255, 255, 255, 0.3);
-    color: #666666;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #777777;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
 
-.role-btn:hover {
-    color: #888888;
-}
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #666666;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-weight: 400;
+        }
 
-/* Form group */
-.form-group {
-    margin-bottom: 18px;
-}
+        .form-group input::placeholder {
+            color: #cccccc;
+        }
 
-.form-group label {
-    display: block;
-    margin-bottom: 6px;
-    color: #777777;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(100, 150, 255, 0.5);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.1);
+        }
 
-.form-group input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #666666;
-    font-family: 'Poppins', sans-serif;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    font-weight: 400;
-}
+        /* Admin notes */
+        .admin-note {
+            background: rgba(100, 150, 255, 0.1);
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 18px;
+            font-size: 0.8rem;
+            color: #888888;
+            display: none;
+            font-weight: 400;
+        }
 
-.form-group input::placeholder {
-    color: #cccccc;
-}
+        .admin-note.show {
+            display: block;
+        }
 
-.form-group input:focus {
-    outline: none;
-    border-color: rgba(100, 150, 255, 0.5);
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.1);
-}
+        /* Login button */
+        .login-btn {
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            color: #666666;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            backdrop-filter: blur(10px);
+            margin-top: 5px;
+        }
 
-/* Admin notes */
-.admin-note {
-    background: rgba(100, 150, 255, 0.1);
-    border: 1px solid rgba(100, 150, 255, 0.2);
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 18px;
-    font-size: 0.8rem;
-    color: #888888;
-    display: none;
-    font-weight: 400;
-}
+        .login-btn:hover {
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
+            box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
+            transform: translateY(-2px);
+        }
 
-.admin-note.show {
-    display: block;
-}
+        .login-btn:active {
+            transform: translateY(0);
+        }
 
-/* Login button */
-.login-btn,
-.admin-create-btn,
-.logout-btn {
-    width: 100%;
-    padding: 11px;
-    background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 10px;
-    color: #666666;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    backdrop-filter: blur(10px);
-    margin-top: 5px;
-}
+        /* Footer text */
+        .footer-text {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 0.75rem;
+            color: #dddddd;
+            font-weight: 300;
+        }
 
-.login-btn:hover,
-.admin-create-btn:hover,
-.logout-btn:hover {
-    background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
-    box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
-    transform: translateY(-2px);
-}
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.login-btn:active,
-.admin-create-btn:active,
-.logout-btn:active {
-    transform: translateY(0);
-}
+        /* Responsive */
+        @media (max-width: 480px) {
+            .card {
+                padding: 35px 25px;
+            }
 
-/* Admin dashboard */
-.admin-header {
-    text-align: center;
-    margin-bottom: 22px;
-}
+            .card h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blur blur-1"></div>
+    <div class="bg-blur blur-2"></div>
 
-.admin-header h2 {
-    font-size: 1.5rem;
-    color: #666666;
-    font-weight: 700;
-    margin-bottom: 6px;
-}
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="card">
+                <div class="welcome-message">
+                    <h2>Induction</h2>
+                    <p>Let's Get Started!</p>
+                </div>
+                
+                <div class="option-buttons">
+                    <button class="option-btn" onclick="goToLogin('login')">Login</button>
+                    <button class="option-btn" onclick="goToLogin('signup')">Sign Up</button>
+                </div>
 
-.admin-header p {
-    color: #999999;
-    font-size: 0.85rem;
-    font-weight: 300;
-    margin-bottom: 0;
-}
+            </div>
+        </div>
 
-.admin-panel {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    border-radius: 14px;
-    padding: 18px;
-    margin-top: 18px;
-    backdrop-filter: blur(10px);
-}
+        <!-- Login/Signup Screen -->
+        <div class="login-screen" id="loginScreen">
+            <button class="back-btn" onclick="goBack()">← Back</button>
 
-.admin-panel-title {
-    font-size: 0.95rem;
-    color: #666666;
-    font-weight: 600;
-    margin-bottom: 14px;
-    text-align: center;
-}
+            <div class="card">
+                <h1 id="screenTitle">Login</h1>
+                <p id="screenSubtitle">Welcome Back</p>
 
-.admin-create-form {
-    display: flex;
-    flex-direction: column;
-}
+                <!-- Role selector -->
+                <div class="role-selector">
+                    <button class="role-btn active" onclick="selectRole('student')">Student</button>
+                    <button class="role-btn" onclick="selectRole('admin')">Admin</button>
+                </div>
 
-.admin-create-btn {
-    margin-top: 8px;
-}
+                <!-- Login form -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
 
-.logout-btn {
-    background: rgba(255, 255, 255, 0.12);
-    margin-top: 14px;
-}
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                    </div>
 
-.logout-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
+                    <div class="form-group" id="nameGroup" style="display: none;">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name">
+                    </div>
 
-/* Admin user list */
-.admin-list {
-    margin-top: 18px;
-}
+                    <button type="submit" class="login-btn" id="submitBtn">Login</button>
+                </form>
 
-.admin-user-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.14);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-}
+            </div>
+        </div>
+    </div>
 
-.admin-user-info h3 {
-    font-size: 0.85rem;
-    color: #666666;
-    font-weight: 600;
-    margin-bottom: 2px;
-}
+    <script>
+        let currentRole = 'student';
+        let currentMode = 'login'; // 'login' or 'signup'
 
-.admin-user-info span {
-    font-size: 0.75rem;
-    color: #999999;
-}
+        function goToLogin(mode) {
+            currentMode = mode;
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('active');
+            
+            if (mode === 'signup') {
+                document.getElementById('screenTitle').textContent = 'Sign Up';
+                document.getElementById('screenSubtitle').textContent = 'Create Account';
+                document.getElementById('nameGroup').style.display = 'block';
+                document.getElementById('submitBtn').textContent = 'Sign Up';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('name').value = '';
+            } else {
+                document.getElementById('screenTitle').textContent = 'Login';
+                document.getElementById('screenSubtitle').textContent = 'Welcome Back';
+                document.getElementById('nameGroup').style.display = 'none';
+                document.getElementById('submitBtn').textContent = 'Login';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
 
-.role-badge {
-    padding: 5px 9px;
-    border-radius: 999px;
-    background: rgba(100, 150, 255, 0.14);
-    border: 1px solid rgba(100, 150, 255, 0.22);
-    color: #6683d9;
-    font-size: 0.7rem;
-    font-weight: 600;
-    white-space: nowrap;
-}
+        function goBack() {
+            document.getElementById('loginScreen').classList.remove('active');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            currentRole = 'student';
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.role-btn')[0].classList.add('active');
+        }
 
-.role-badge.superadmin {
-    background: rgba(255, 215, 120, 0.18);
-    border: 1px solid rgba(255, 215, 120, 0.35);
-    color: #b68500;
-}
+        function selectRole(role) {
+            currentRole = role;
+            
+            // Update button states
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
 
-/* Security message */
-.security-banner {
-    background: rgba(255, 220, 120, 0.12);
-    border: 1px solid rgba(255, 220, 120, 0.28);
-    border-radius: 10px;
-    padding: 10px;
-    color: #a98400;
-    font-size: 0.78rem;
-    font-weight: 500;
-    text-align: center;
-    margin-bottom: 16px;
-}
+            // Show/hide admin note
+            const adminNote = document.getElementById('adminNote');
+            if (role === 'admin') {
+                adminNote.classList.add('show');
+            } else {
+                adminNote.classList.remove('show');
+            }
+        }
 
-/* Divider */
-.divider {
-    width: 100%;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.22);
-    margin: 20px 0;
-}
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = currentRole;
+            const name = currentMode === 'signup' ? document.getElementById('name').value : '';
 
-/* Footer text */
-.footer-text {
-    text-align: center;
-    margin-top: 18px;
-    font-size: 0.75rem;
-    color: #dddddd;
-    font-weight: 300;
-}
-
-/* Animations */
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-    body {
-        align-items: flex-start;
-        padding: 16px;
-    }
-
-    .container {
-        padding: 10px;
-    }
-
-    .card {
-        padding: 35px 25px;
-    }
-
-    .card h1 {
-        font-size: 1.5rem;
-    }
-
-    .admin-user-card {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-}
+            // Placeholder - replace with your backend call
+            if (currentMode === 'signup') {
+                console.log(`Sign up attempt: ${name}, ${email} as ${role}`);
+                alert(`Sign up successful for ${email}. Welcome to Induction!`);
+            } else {
+                console.log(`Login attempt: ${email} as ${role}`);
+                if (role === 'admin') {
+                    alert(`Admin login successful for ${email}. Redirecting to admin dashboard...`);
+                } else {
+                    alert(`Student login successful for ${email}. Redirecting to induction...`);
+                }
+            }
         }
     </script>
 </body>
