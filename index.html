@@ -107,6 +107,14 @@
             margin-bottom: 0;
         }
 
+        .screen-copy {
+            text-align: center;
+            color: #8a8a8a;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: -10px 0 18px;
+        }
+
         .option-buttons {
             display: flex;
             flex-direction: column;
@@ -115,7 +123,8 @@
 
         .option-btn,
         .primary-btn,
-        .secondary-btn {
+        .secondary-btn,
+        .ghost-btn {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
@@ -132,7 +141,8 @@
 
         .option-btn:hover,
         .primary-btn:hover,
-        .secondary-btn:hover {
+        .secondary-btn:hover,
+        .ghost-btn:hover {
             background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
             box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
             transform: translateY(-2px);
@@ -140,7 +150,8 @@
 
         .option-btn:active,
         .primary-btn:active,
-        .secondary-btn:active {
+        .secondary-btn:active,
+        .ghost-btn:active {
             transform: translateY(0);
         }
 
@@ -148,7 +159,9 @@
             margin-top: 4px;
         }
 
-        .back-inside-btn {
+        .forgot-password-btn,
+        .back-inside-btn,
+        .ghost-btn {
             margin-top: 12px;
         }
 
@@ -203,6 +216,10 @@
             margin-bottom: 18px;
         }
 
+        .form-group.hidden {
+            display: none;
+        }
+
         .form-group label {
             display: block;
             margin-bottom: 6px;
@@ -245,6 +262,10 @@
             box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.1);
         }
 
+        .form-group input[readonly] {
+            opacity: 0.8;
+        }
+
         .toggle-password-btn {
             position: absolute;
             top: 50%;
@@ -264,24 +285,6 @@
             color: #555555;
         }
 
-        .forgot-password-btn {
-            width: 100%;
-            margin-top: 8px;
-            border: none;
-            background: transparent;
-            color: #777777;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            font-family: inherit;
-            text-decoration: underline;
-            text-underline-offset: 2px;
-        }
-
-        .forgot-password-btn.hidden {
-            display: none;
-        }
-
         .status-box {
             display: none;
             margin-bottom: 18px;
@@ -293,6 +296,7 @@
             border: 1px solid rgba(100, 150, 255, 0.16);
             text-align: center;
             word-break: break-word;
+            line-height: 1.5;
         }
 
         .status-box.show {
@@ -344,6 +348,7 @@
         <div class="auth-screen" id="authScreen">
             <div class="card">
                 <h1 id="screenTitle">Login</h1>
+                <p class="screen-copy" id="screenCopy" style="display: none;"></p>
 
                 <div class="status-box" id="sessionStatus"></div>
 
@@ -353,21 +358,21 @@
                 </div>
 
                 <form id="authForm" onsubmit="handleSubmit(event)">
-                    <div class="form-group" id="nameGroup" style="display: none;">
+                    <div class="form-group hidden" id="nameGroup">
                         <label for="name">Full Name</label>
                         <div class="input-wrap plain-input">
                             <input type="text" id="name" placeholder="Enter Full Name" />
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="emailGroup">
                         <label for="email">Email</label>
                         <div class="input-wrap plain-input">
                             <input type="email" id="email" placeholder="Enter Email" required />
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="passwordGroup">
                         <label for="password">Password</label>
                         <div class="input-wrap">
                             <input type="password" id="password" placeholder="Enter Password" required />
@@ -375,7 +380,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group" id="confirmPasswordGroup" style="display: none;">
+                    <div class="form-group hidden" id="confirmPasswordGroup">
                         <label for="confirmPassword">Confirm Password</label>
                         <div class="input-wrap">
                             <input type="password" id="confirmPassword" placeholder="Confirm Password" />
@@ -386,7 +391,12 @@
                     <button type="submit" class="primary-btn" id="submitBtn">Login</button>
                 </form>
 
-                <button class="forgot-password-btn" id="forgotPasswordBtn" type="button" onclick="handleForgotPassword()">
+                <button
+                    class="option-btn forgot-password-btn"
+                    id="forgotPasswordBtn"
+                    type="button"
+                    onclick="goToScreen('forgot-password')"
+                >
                     Forgot Password?
                 </button>
 
@@ -482,6 +492,7 @@
 
         function resetForm() {
             document.getElementById('authForm').reset();
+            document.getElementById('email').readOnly = false;
             resetPasswordToggles();
         }
 
@@ -533,6 +544,12 @@
             statusBox.classList.toggle('show', Boolean(message));
         }
 
+        function showScreenCopy(message = '') {
+            const screenCopy = document.getElementById('screenCopy');
+            screenCopy.textContent = message;
+            screenCopy.style.display = message ? 'block' : 'none';
+        }
+
         function canManageAdmins(session) {
             return Boolean(session && (session.role === 'admin' || session.role === 'super-admin'));
         }
@@ -540,24 +557,42 @@
         function updatePrivilegedControls() {
             const session = getSession();
             const createAdminBtn = document.getElementById('createAdminBtn');
+            const showCreateAdmin = canManageAdmins(session) && currentMode !== 'forgot-password' && currentMode !== 'set-password';
 
-            if (canManageAdmins(session)) {
-                createAdminBtn.classList.add('show');
+            createAdminBtn.classList.toggle('show', showCreateAdmin);
+
+            if (showCreateAdmin) {
                 showSessionStatus(`Logged in as ${session.role}: ${session.email}`);
                 return;
             }
 
-            createAdminBtn.classList.remove('show');
-
-            if (currentMode !== 'set-password') {
+            if (currentMode !== 'set-password' && currentMode !== 'create-admin' && currentMode !== 'forgot-password') {
                 showSessionStatus('');
             }
         }
 
         function updateForgotPasswordVisibility() {
             const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
-            const shouldShow = currentMode === 'login';
-            forgotPasswordBtn.classList.toggle('hidden', !shouldShow);
+            forgotPasswordBtn.style.display = currentMode === 'login' ? 'block' : 'none';
+        }
+
+        function configureBaseScreen() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.add('active');
+
+            document.getElementById('nameGroup').classList.add('hidden');
+            document.getElementById('roleSelector').classList.remove('hidden');
+            document.getElementById('passwordGroup').classList.remove('hidden');
+            document.getElementById('confirmPasswordGroup').classList.add('hidden');
+
+            document.getElementById('password').required = true;
+            document.getElementById('confirmPassword').required = false;
+            document.getElementById('password').placeholder = 'Enter Password';
+            document.getElementById('confirmPassword').placeholder = 'Confirm Password';
+            document.getElementById('submitBtn').textContent = 'Login';
+
+            showScreenCopy('');
+            showSessionStatus('');
         }
 
         function redirectToDashboard() {
@@ -567,22 +602,18 @@
         function configurePasswordSetupScreen(email) {
             currentMode = 'set-password';
             resetForm();
-
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('authScreen').classList.add('active');
+            configureBaseScreen();
 
             document.getElementById('screenTitle').textContent = 'Create Password';
-            document.getElementById('nameGroup').style.display = 'none';
             document.getElementById('roleSelector').classList.add('hidden');
+            document.getElementById('confirmPasswordGroup').classList.remove('hidden');
             document.getElementById('submitBtn').textContent = 'Save Password';
             document.getElementById('email').value = email;
             document.getElementById('email').readOnly = true;
-            document.getElementById('password').value = '';
             document.getElementById('password').placeholder = 'Create New Password';
-            document.getElementById('password').required = true;
-            document.getElementById('confirmPasswordGroup').style.display = 'block';
             document.getElementById('confirmPassword').required = true;
-            showSessionStatus('Create your own password before continuing.');
+
+            showScreenCopy('Create your own password before continuing.');
             updatePrivilegedControls();
             updateForgotPasswordVisibility();
         }
@@ -590,40 +621,29 @@
         function goToScreen(mode) {
             currentMode = mode;
             resetForm();
+            configureBaseScreen();
 
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('authScreen').classList.add('active');
-
+            const session = getSession();
             const screenTitle = document.getElementById('screenTitle');
             const nameGroup = document.getElementById('nameGroup');
             const roleSelector = document.getElementById('roleSelector');
             const submitBtn = document.getElementById('submitBtn');
             const passwordInput = document.getElementById('password');
-            const emailInput = document.getElementById('email');
             const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
-            const confirmPasswordInput = document.getElementById('confirmPassword');
-
-            emailInput.readOnly = false;
-            passwordInput.placeholder = 'Enter Password';
-            confirmPasswordGroup.style.display = 'none';
-            confirmPasswordInput.required = false;
-            showSessionStatus('');
 
             if (mode === 'signup') {
                 screenTitle.textContent = 'Sign Up';
-                nameGroup.style.display = 'block';
+                nameGroup.classList.remove('hidden');
                 roleSelector.classList.add('hidden');
                 submitBtn.textContent = 'Sign Up';
-                passwordInput.required = true;
                 currentRole = 'student';
+                showScreenCopy('Create your student account to continue.');
                 updatePrivilegedControls();
                 updateForgotPasswordVisibility();
                 return;
             }
 
             if (mode === 'create-admin') {
-                const session = getSession();
-
                 if (!canManageAdmins(session)) {
                     alert('Only a logged-in admin or super-admin can create another admin account.');
                     goToScreen('login');
@@ -631,41 +651,57 @@
                 }
 
                 screenTitle.textContent = 'Create Admin';
-                nameGroup.style.display = 'block';
+                nameGroup.classList.remove('hidden');
                 roleSelector.classList.add('hidden');
                 submitBtn.textContent = 'Create Admin';
                 passwordInput.required = false;
                 passwordInput.value = DEFAULT_ADMIN_PASSWORD;
                 passwordInput.placeholder = 'Temporary Password';
                 currentRole = 'admin';
+                showScreenCopy('New admin users will sign in with the temporary password and then create their own password.');
                 showSessionStatus(`Temporary password: ${DEFAULT_ADMIN_PASSWORD}`);
                 updatePrivilegedControls();
                 updateForgotPasswordVisibility();
                 return;
             }
 
+            if (mode === 'forgot-password') {
+                screenTitle.textContent = 'Forgot Password';
+                roleSelector.classList.add('hidden');
+                passwordInput.required = false;
+                passwordInput.value = '';
+                passwordInput.placeholder = 'Not needed here';
+                document.getElementById('passwordGroup').classList.add('hidden');
+                confirmPasswordGroup.classList.add('hidden');
+                submitBtn.textContent = 'Reset Password';
+                showScreenCopy('Enter your email address to reset your password.');
+                showSessionStatus('');
+                updatePrivilegedControls();
+                updateForgotPasswordVisibility();
+                return;
+            }
+
             screenTitle.textContent = 'Login';
-            nameGroup.style.display = 'none';
-            roleSelector.classList.remove('hidden');
-            submitBtn.textContent = 'Login';
-            passwordInput.required = true;
             setDefaultRole();
+            showScreenCopy('');
             updatePrivilegedControls();
             updateForgotPasswordVisibility();
         }
 
         function goBack() {
-            clearSession();
+            const pendingRaw = localStorage.getItem('pendingPasswordSetup');
+
+            if (currentMode === 'set-password' && pendingRaw) {
+                localStorage.removeItem('pendingPasswordSetup');
+            }
+
             document.getElementById('authScreen').classList.remove('active');
             document.getElementById('welcomeScreen').classList.remove('hidden');
             currentMode = 'login';
             resetForm();
             setDefaultRole();
-            document.getElementById('email').readOnly = false;
-            document.getElementById('password').placeholder = 'Enter Password';
-            document.getElementById('confirmPasswordGroup').style.display = 'none';
-            document.getElementById('confirmPassword').required = false;
             showSessionStatus('');
+            showScreenCopy('');
             updatePrivilegedControls();
             updateForgotPasswordVisibility();
         }
@@ -699,7 +735,7 @@
             saveUsers(users);
         }
 
-        function handleStudentSignup(email, password, name) {
+        function handleStudentSignup(email, _password, name) {
             if (!name) {
                 alert('Please enter your full name.');
                 return;
@@ -739,7 +775,6 @@
         }
 
         function handleStudentLogin(email) {
-            clearSession();
             saveSession({
                 name: 'Student',
                 email,
@@ -849,14 +884,8 @@
             redirectToDashboard();
         }
 
-        function handleForgotPassword() {
-            const email = prompt('Enter your email address:');
-
-            if (!email || !email.trim()) {
-                return;
-            }
-
-            const normalizedEmail = email.trim().toLowerCase();
+        function handleForgotPassword(email) {
+            const normalizedEmail = email.toLowerCase();
             const user = findUserByEmail(normalizedEmail);
 
             if (!user) {
@@ -872,10 +901,10 @@
                 };
 
                 updateUser(updatedUser);
-
                 alert(
-                    `Password reset successful.\nTemporary password: ${DEFAULT_ADMIN_PASSWORD}\nYou will be asked to create a new password after login.`
+                    `Password reset successful for ${normalizedEmail}.\nTemporary password: ${DEFAULT_ADMIN_PASSWORD}\nThe user will create a new password after login.`
                 );
+                goToScreen('login');
                 return;
             }
 
@@ -890,6 +919,11 @@
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
+            if (!email) {
+                alert('Please enter your email.');
+                return;
+            }
+
             if (currentMode === 'signup') {
                 handleStudentSignup(email, password, name);
                 return;
@@ -902,6 +936,11 @@
 
             if (currentMode === 'set-password') {
                 handlePasswordSetup(password, confirmPassword);
+                return;
+            }
+
+            if (currentMode === 'forgot-password') {
+                handleForgotPassword(email);
                 return;
             }
 
