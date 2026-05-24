@@ -87,25 +87,17 @@
 
         .card h1 {
             font-size: 1.8rem;
-            margin-bottom: 5px;
+            margin-bottom: 24px;
             color: #666666;
             text-align: center;
             font-weight: 700;
             letter-spacing: -0.5px;
         }
 
-        .card p {
-            text-align: center;
-            color: #999999;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            font-weight: 300;
-        }
-
         .welcome-message {
             text-align: center;
             color: #666666;
-            margin-bottom: 10px;
+            margin-bottom: 18px;
         }
 
         .welcome-message h2 {
@@ -157,6 +149,14 @@
             transform: translateY(0);
         }
 
+        .primary-btn {
+            margin-top: 4px;
+        }
+
+        .back-inside-btn {
+            margin-top: 12px;
+        }
+
         .secondary-btn {
             margin-top: 12px;
             padding: 11px;
@@ -167,13 +167,9 @@
             display: block;
         }
 
-        .back-inside-btn {
-            margin-top: 12px;
-        }
-
         .role-selector {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             margin-bottom: 25px;
             background: rgba(255, 255, 255, 0.1);
@@ -191,7 +187,7 @@
             background: transparent;
             cursor: pointer;
             border-radius: 10px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 500;
             color: #bbbbbb;
             transition: all 0.3s ease;
@@ -281,10 +277,7 @@
 
             .card h1 {
                 font-size: 1.5rem;
-            }
-
-            .role-selector {
-                grid-template-columns: 1fr;
+                margin-bottom: 20px;
             }
         }
     </style>
@@ -311,14 +304,12 @@
         <div class="auth-screen" id="authScreen">
             <div class="card">
                 <h1 id="screenTitle">Login</h1>
-                <p id="screenSubtitle">Welcome Back</p>
 
                 <div class="status-box" id="sessionStatus"></div>
 
                 <div class="role-selector" id="roleSelector">
                     <button class="role-btn active" type="button" onclick="selectRole('student', this)">Student</button>
                     <button class="role-btn" type="button" onclick="selectRole('admin', this)">Admin</button>
-                    <button class="role-btn" type="button" onclick="selectRole('superuser', this)">Superuser</button>
                 </div>
 
                 <form id="authForm" onsubmit="handleSubmit(event)">
@@ -462,15 +453,13 @@
             document.getElementById('authScreen').classList.add('active');
 
             const screenTitle = document.getElementById('screenTitle');
-            const screenSubtitle = document.getElementById('screenSubtitle');
             const nameGroup = document.getElementById('nameGroup');
             const roleSelector = document.getElementById('roleSelector');
             const submitBtn = document.getElementById('submitBtn');
             const passwordInput = document.getElementById('password');
 
             if (mode === 'signup') {
-                screenTitle.textContent = 'Student Sign Up';
-                screenSubtitle.textContent = 'Create Your Student Account';
+                screenTitle.textContent = 'Sign Up';
                 nameGroup.style.display = 'block';
                 roleSelector.classList.add('hidden');
                 submitBtn.textContent = 'Sign Up';
@@ -490,7 +479,6 @@
                 }
 
                 screenTitle.textContent = 'Create Admin';
-                screenSubtitle.textContent = 'Admins and superusers can add admin accounts';
                 nameGroup.style.display = 'block';
                 roleSelector.classList.add('hidden');
                 submitBtn.textContent = 'Create Admin';
@@ -501,7 +489,6 @@
             }
 
             screenTitle.textContent = 'Login';
-            screenSubtitle.textContent = 'Student, Admin, or Superuser Login';
             nameGroup.style.display = 'none';
             roleSelector.classList.remove('hidden');
             submitBtn.textContent = 'Login';
@@ -552,11 +539,11 @@
             goToScreen('login');
         }
 
-        function handlePrivilegedLogin(email, password, expectedRole) {
+        function handlePrivilegedLogin(email, password) {
             const user = findPrivilegedUserByEmail(email);
 
-            if (!user || user.role !== expectedRole || user.password !== password) {
-                alert(`${expectedRole.charAt(0).toUpperCase() + expectedRole.slice(1)} login failed. Invalid email or password.`);
+            if (!user || (user.role !== 'admin' && user.role !== 'superuser') || user.password !== password) {
+                alert('Admin login failed. Invalid email or password.');
                 return;
             }
 
@@ -583,8 +570,8 @@
         }
 
         function handleLogin(email, password) {
-            if (currentRole === 'admin' || currentRole === 'superuser') {
-                handlePrivilegedLogin(email, password, currentRole);
+            if (currentRole === 'admin') {
+                handlePrivilegedLogin(email, password);
                 return;
             }
 
