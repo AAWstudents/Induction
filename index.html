@@ -1,4 +1,3 @@
-<!-- /index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -158,10 +157,6 @@
             transform: translateY(0);
         }
 
-        .back-option-btn {
-            margin-bottom: 15px;
-        }
-
         .secondary-btn {
             margin-top: 12px;
             padding: 11px;
@@ -170,6 +165,10 @@
 
         .secondary-btn.show {
             display: block;
+        }
+
+        .back-inside-btn {
+            margin-top: 12px;
         }
 
         .role-selector {
@@ -310,8 +309,6 @@
         </div>
 
         <div class="auth-screen" id="authScreen">
-            <button class="option-btn back-option-btn" type="button" onclick="goBack()">← Back</button>
-
             <div class="card">
                 <h1 id="screenTitle">Login</h1>
                 <p id="screenSubtitle">Welcome Back</p>
@@ -342,6 +339,8 @@
 
                     <button type="submit" class="primary-btn" id="submitBtn">Login</button>
                 </form>
+
+                <button class="option-btn back-inside-btn" type="button" onclick="goBack()">← Back</button>
 
                 <button
                     class="secondary-btn"
