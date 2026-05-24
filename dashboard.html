@@ -32,7 +32,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             border-bottom: 1px solid rgba(0, 0, 0, 0.06);
@@ -106,15 +106,14 @@
             position: absolute;
             top: 54px;
             right: 0;
-            width: 290px;
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.65);
+            width: 300px;
+            background: #ffffff;
+            border: 1px solid rgba(220, 226, 235, 0.95);
             border-radius: 20px;
             padding: 18px;
             box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
             display: none;
+            z-index: 1100;
         }
 
         .profile-menu.show {
@@ -180,32 +179,23 @@
             width: 76px;
             height: 76px;
             border-radius: 50%;
-            position: relative;
             display: grid;
             place-items: center;
-            background:
-                radial-gradient(circle at center, #ffffff 55%, transparent 56%),
-                conic-gradient(
-                    from 180deg,
-                    rgba(100, 150, 255, 0.9) 0deg,
-                    rgba(150, 100, 255, 0.85) var(--progress-deg),
-                    rgba(228, 234, 245, 1) var(--progress-deg),
-                    rgba(228, 234, 245, 1) 360deg
-                );
-            transform: rotate(180deg);
+            position: relative;
+            background: conic-gradient(
+                rgba(100, 150, 255, 0.95) 0deg,
+                rgba(150, 100, 255, 0.9) var(--progress-deg),
+                rgba(228, 234, 245, 1) var(--progress-deg),
+                rgba(228, 234, 245, 1) 360deg
+            );
         }
 
         .donut-ring::after {
             content: "";
             position: absolute;
-            width: 18px;
-            height: 18px;
-            bottom: -1px;
-            left: 50%;
-            transform: translateX(-50%);
+            inset: 10px;
             background: #ffffff;
             border-radius: 50%;
-            z-index: 1;
         }
 
         .donut-label {
@@ -216,8 +206,7 @@
             font-size: 0.85rem;
             font-weight: 700;
             color: #666666;
-            transform: none;
-            z-index: 2;
+            z-index: 1;
         }
 
         .profile-action {
@@ -343,7 +332,7 @@
         }
 
         .hero-card {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
@@ -490,6 +479,8 @@
     </div>
 
     <script>
+        const DEFAULT_ADMIN_PASSWORD = 'ChangeThisNow123!';
+
         const views = {
             induction: {
                 title: 'Induction',
@@ -585,6 +576,38 @@
             return session.role === 'student' ? 68 : 0;
         }
 
+        function getStoredAdmins() {
+            const rawAdmins = localStorage.getItem('inductionAdmins');
+
+            if (rawAdmins) {
+                try {
+                    const parsedAdmins = JSON.parse(rawAdmins);
+
+                    if (Array.isArray(parsedAdmins)) {
+                        return parsedAdmins;
+                    }
+                } catch (error) {
+                    console.error('Failed to parse stored admins.', error);
+                }
+            }
+
+            const defaultAdmins = [
+                {
+                    name: 'System Admin',
+                    email: 'admin@induction.com',
+                    password: DEFAULT_ADMIN_PASSWORD,
+                    role: 'super-admin'
+                }
+            ];
+
+            localStorage.setItem('inductionAdmins', JSON.stringify(defaultAdmins));
+            return defaultAdmins;
+        }
+
+        function saveStoredAdmins(admins) {
+            localStorage.setItem('inductionAdmins', JSON.stringify(admins));
+        }
+
         function createStudentProfileMarkup(progress) {
             const progressDegrees = Math.round((progress / 100) * 360);
 
@@ -610,15 +633,23 @@
             `;
         }
 
-        function createAdminProfileMarkup() {
+        function createAdminProfileMarkup(session) {
+            const canCreateAdmin = session.role === 'admin' || session.role === 'super-admin';
+
             return `
                 <button class="profile-action" type="button" onclick="goToStudentAccounts()">
                     Student Accounts / Progress
                 </button>
 
-                <button class="profile-action" type="button" onclick="goToCreateUserAccount()">
-                    Create Another User Account
-                </button>
+                ${
+                    canCreateAdmin
+                        ? `
+                            <button class="profile-action" type="button" onclick="createAnotherAdminUser()">
+                                Create Another Admin User
+                            </button>
+                        `
+                        : ''
+                }
 
                 <button class="profile-action logout-btn" type="button" onclick="logout()">
                     Logout
@@ -633,8 +664,8 @@
 
             const profileContent = document.getElementById('profileContent');
 
-            if (session.role === 'admin') {
-                profileContent.innerHTML = createAdminProfileMarkup();
+            if (session.role === 'admin' || session.role === 'super-admin') {
+                profileContent.innerHTML = createAdminProfileMarkup(session);
                 return;
             }
 
@@ -711,8 +742,47 @@
             window.location.href = 'student-accounts.html';
         }
 
-        function goToCreateUserAccount() {
-            window.location.href = 'create-user.html';
+        function createAnotherAdminUser() {
+            const session = getSession();
+
+            if (!session || (session.role !== 'admin' && session.role !== 'super-admin')) {
+                alert('Only admin or super-admin users can create another admin user.');
+                return;
+            }
+
+            const name = prompt('Enter the new admin full name:');
+            if (!name || !name.trim()) {
+                return;
+            }
+
+            const email = prompt('Enter the new admin email:');
+            if (!email || !email.trim()) {
+                return;
+            }
+
+            const normalizedEmail = email.trim().toLowerCase();
+            const admins = getStoredAdmins();
+            const adminExists = admins.some((admin) => admin.email.toLowerCase() === normalizedEmail);
+
+            if (adminExists) {
+                alert('An admin account with this email already exists.');
+                return;
+            }
+
+            admins.push({
+                name: name.trim(),
+                email: normalizedEmail,
+                password: DEFAULT_ADMIN_PASSWORD,
+                role: 'admin'
+            });
+
+            saveStoredAdmins(admins);
+
+            alert(
+                `Admin user created.\nEmail: ${normalizedEmail}\nTemporary password: ${DEFAULT_ADMIN_PASSWORD}`
+            );
+
+            closeProfileMenu();
         }
 
         function logout() {
@@ -731,6 +801,7 @@
         const session = ensureAuthenticated();
 
         if (session) {
+            getStoredAdmins();
             populateProfile(session);
             setView('induction');
         }
