@@ -123,8 +123,7 @@
 
         .option-btn,
         .primary-btn,
-        .secondary-btn,
-        .ghost-btn {
+        .secondary-btn {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.3));
@@ -141,8 +140,7 @@
 
         .option-btn:hover,
         .primary-btn:hover,
-        .secondary-btn:hover,
-        .ghost-btn:hover {
+        .secondary-btn:hover {
             background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.4));
             box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
             transform: translateY(-2px);
@@ -150,8 +148,7 @@
 
         .option-btn:active,
         .primary-btn:active,
-        .secondary-btn:active,
-        .ghost-btn:active {
+        .secondary-btn:active {
             transform: translateY(0);
         }
 
@@ -160,8 +157,7 @@
         }
 
         .forgot-password-btn,
-        .back-inside-btn,
-        .ghost-btn {
+        .back-inside-btn {
             margin-top: 12px;
         }
 
@@ -234,7 +230,7 @@
 
         .form-group input {
             width: 100%;
-            padding: 10px 50px 10px 12px;
+            padding: 10px 56px 10px 12px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             background: rgba(255, 255, 255, 0.15);
             border-radius: 10px;
@@ -263,7 +259,7 @@
         }
 
         .form-group input[readonly] {
-            opacity: 0.8;
+            opacity: 0.85;
         }
 
         .toggle-password-btn {
@@ -428,7 +424,7 @@
                 name: 'Pandora Burns',
                 email: 'pandoraburns@btinternet.com',
                 password: DEFAULT_ADMIN_PASSWORD,
-                role: 'super-admin',
+                role: 'superuser',
                 mustChangePassword: false
             }
         ];
@@ -436,33 +432,70 @@
         let currentRole = 'student';
         let currentMode = 'login';
 
+        function isPrivilegedRole(role) {
+            return role === 'admin' || role === 'superuser' || role === 'super-admin';
+        }
+
+        function normalizePrivilegedRole(role) {
+            return role === 'super-admin' ? 'superuser' : role;
+        }
+
+        function mergeDefaultUsers(users) {
+            const mergedUsers = [...users];
+
+            DEFAULT_USERS.forEach((defaultUser) => {
+                const existingIndex = mergedUsers.findIndex(
+                    (user) => user.email.toLowerCase() === defaultUser.email.toLowerCase()
+                );
+
+                if (existingIndex === -1) {
+                    mergedUsers.push(defaultUser);
+                    return;
+                }
+
+                mergedUsers[existingIndex] = {
+                    mustChangePassword: false,
+                    ...defaultUser,
+                    ...mergedUsers[existingIndex],
+                    role: normalizePrivilegedRole(mergedUsers[existingIndex].role || defaultUser.role)
+                };
+            });
+
+            return mergedUsers.map((user) => ({
+                mustChangePassword: false,
+                ...user,
+                role: normalizePrivilegedRole(user.role)
+            }));
+        }
+
         function getStoredUsers() {
             const rawUsers = localStorage.getItem('inductionUsers');
 
             if (!rawUsers) {
-                localStorage.setItem('inductionUsers', JSON.stringify(DEFAULT_USERS));
-                return [...DEFAULT_USERS];
+                const seededUsers = mergeDefaultUsers([]);
+                localStorage.setItem('inductionUsers', JSON.stringify(seededUsers));
+                return seededUsers;
             }
 
             try {
                 const parsedUsers = JSON.parse(rawUsers);
 
                 if (Array.isArray(parsedUsers)) {
-                    return parsedUsers.map((user) => ({
-                        mustChangePassword: false,
-                        ...user
-                    }));
+                    const mergedUsers = mergeDefaultUsers(parsedUsers);
+                    localStorage.setItem('inductionUsers', JSON.stringify(mergedUsers));
+                    return mergedUsers;
                 }
             } catch (error) {
                 console.error('Failed to parse stored users.', error);
             }
 
-            localStorage.setItem('inductionUsers', JSON.stringify(DEFAULT_USERS));
-            return [...DEFAULT_USERS];
+            const fallbackUsers = mergeDefaultUsers([]);
+            localStorage.setItem('inductionUsers', JSON.stringify(fallbackUsers));
+            return fallbackUsers;
         }
 
         function saveUsers(users) {
-            localStorage.setItem('inductionUsers', JSON.stringify(users));
+            localStorage.setItem('inductionUsers', JSON.stringify(mergeDefaultUsers(users)));
         }
 
         function getSession() {
@@ -473,7 +506,13 @@
             }
 
             try {
-                return JSON.parse(rawSession);
+                const session = JSON.parse(rawSession);
+                return session
+                    ? {
+                          ...session,
+                          role: normalizePrivilegedRole(session.role)
+                      }
+                    : null;
             } catch (error) {
                 console.error('Failed to parse session.', error);
                 localStorage.removeItem('inductionSession');
@@ -482,12 +521,13 @@
         }
 
         function saveSession(session) {
-            localStorage.setItem('inductionSession', JSON.stringify(session));
-        }
-
-        function clearSession() {
-            localStorage.removeItem('inductionSession');
-            localStorage.removeItem('pendingPasswordSetup');
+            localStorage.setItem(
+                'inductionSession',
+                JSON.stringify({
+                    ...session,
+                    role: normalizePrivilegedRole(session.role)
+                })
+            );
         }
 
         function resetForm() {
@@ -551,7 +591,7 @@
         }
 
         function canManageAdmins(session) {
-            return Boolean(session && (session.role === 'admin' || session.role === 'super-admin'));
+            return Boolean(session && isPrivilegedRole(session.role));
         }
 
         function updatePrivilegedControls() {
@@ -599,7 +639,7 @@
             window.location.href = 'dashboard.html';
         }
 
-        function configurePasswordSetupScreen(email) {
+        function configurePasswordSetupScreen(email, message = 'Create your own password before continuing.') {
             currentMode = 'set-password';
             resetForm();
             configureBaseScreen();
@@ -613,7 +653,7 @@
             document.getElementById('password').placeholder = 'Create New Password';
             document.getElementById('confirmPassword').required = true;
 
-            showScreenCopy('Create your own password before continuing.');
+            showScreenCopy(message);
             updatePrivilegedControls();
             updateForgotPasswordVisibility();
         }
@@ -645,7 +685,7 @@
 
             if (mode === 'create-admin') {
                 if (!canManageAdmins(session)) {
-                    alert('Only a logged-in admin or super-admin can create another admin account.');
+                    alert('Only a logged-in admin or superuser can create another admin account.');
                     goToScreen('login');
                     return;
                 }
@@ -730,7 +770,12 @@
 
         function updateUser(updatedUser) {
             const users = getStoredUsers().map((user) =>
-                user.email.toLowerCase() === updatedUser.email.toLowerCase() ? updatedUser : user
+                user.email.toLowerCase() === updatedUser.email.toLowerCase()
+                    ? {
+                          ...updatedUser,
+                          role: normalizePrivilegedRole(updatedUser.role)
+                      }
+                    : user
             );
             saveUsers(users);
         }
@@ -748,7 +793,7 @@
         function handlePrivilegedLogin(email, password) {
             const user = findUserByEmail(email);
 
-            if (!user || (user.role !== 'admin' && user.role !== 'super-admin') || user.password !== password) {
+            if (!user || !isPrivilegedRole(user.role) || user.password !== password) {
                 alert('Admin login failed. Invalid email or password.');
                 return;
             }
@@ -798,7 +843,7 @@
             const session = getSession();
 
             if (!canManageAdmins(session)) {
-                alert('Only a logged-in admin or super-admin can create another admin account.');
+                alert('Only a logged-in admin or superuser can create another admin account.');
                 return;
             }
 
@@ -889,11 +934,11 @@
             const user = findUserByEmail(normalizedEmail);
 
             if (!user) {
-                alert('No account was found for that email.');
+                showSessionStatus('No account was found for that email.');
                 return;
             }
 
-            if (user.role === 'admin' || user.role === 'super-admin') {
+            if (isPrivilegedRole(user.role)) {
                 const updatedUser = {
                     ...user,
                     password: DEFAULT_ADMIN_PASSWORD,
@@ -901,21 +946,30 @@
                 };
 
                 updateUser(updatedUser);
-                alert(
-                    `Password reset successful for ${normalizedEmail}.\nTemporary password: ${DEFAULT_ADMIN_PASSWORD}\nThe user will create a new password after login.`
+
+                localStorage.setItem(
+                    'pendingPasswordSetup',
+                    JSON.stringify({
+                        email: updatedUser.email
+                    })
                 );
-                goToScreen('login');
+
+                configurePasswordSetupScreen(
+                    updatedUser.email,
+                    `Password reset successful for ${updatedUser.email}. Create a new password below to reaccess your account.`
+                );
+                showSessionStatus(`Temporary password reset completed for ${updatedUser.email}.`);
                 return;
             }
 
-            alert('Student password reset is not connected yet. Please contact your administrator.');
+            showSessionStatus('Student password reset is not connected yet. Please contact your administrator.');
         }
 
         function handleSubmit(event) {
             event.preventDefault();
 
             const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
