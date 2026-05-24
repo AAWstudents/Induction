@@ -1,3 +1,4 @@
+<!-- /index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -339,18 +340,19 @@
     </div>
 
     <script>
+        const DEFAULT_ADMIN_PASSWORD = 'ChangeThisNow123!';
         const DEFAULT_USERS = [
             {
                 name: 'System Admin',
                 email: 'admin@induction.com',
-                password: 'admin123',
+                password: DEFAULT_ADMIN_PASSWORD,
                 role: 'admin'
             },
             {
                 name: 'Pandora Burns',
                 email: 'pandoraburns@btinternet.com',
-                password: 'ChangeMeNow123!',
-                role: 'superuser'
+                password: DEFAULT_ADMIN_PASSWORD,
+                role: 'super-admin'
             }
         ];
 
@@ -367,11 +369,16 @@
 
             try {
                 const parsedUsers = JSON.parse(rawUsers);
-                return Array.isArray(parsedUsers) ? parsedUsers : [...DEFAULT_USERS];
-            } catch {
-                localStorage.setItem('inductionUsers', JSON.stringify(DEFAULT_USERS));
-                return [...DEFAULT_USERS];
+
+                if (Array.isArray(parsedUsers)) {
+                    return parsedUsers;
+                }
+            } catch (error) {
+                console.error('Failed to parse stored users.', error);
             }
+
+            localStorage.setItem('inductionUsers', JSON.stringify(DEFAULT_USERS));
+            return [...DEFAULT_USERS];
         }
 
         function saveUsers(users) {
@@ -387,7 +394,8 @@
 
             try {
                 return JSON.parse(rawSession);
-            } catch {
+            } catch (error) {
+                console.error('Failed to parse session.', error);
                 localStorage.removeItem('inductionSession');
                 return null;
             }
@@ -406,8 +414,16 @@
         }
 
         function setDefaultRole() {
-            const firstRoleButton = document.querySelectorAll('.role-btn')[0];
-            selectRole('student', firstRoleButton);
+            currentRole = 'student';
+
+            document.querySelectorAll('.role-btn').forEach((button) => {
+                button.classList.remove('active');
+            });
+
+            const firstRoleButton = document.querySelector('.role-btn');
+            if (firstRoleButton) {
+                firstRoleButton.classList.add('active');
+            }
         }
 
         function showSessionStatus(message = '') {
@@ -417,7 +433,7 @@
         }
 
         function canManageAdmins(session) {
-            return Boolean(session && (session.role === 'admin' || session.role === 'superuser'));
+            return Boolean(session && (session.role === 'admin' || session.role === 'super-admin'));
         }
 
         function updatePrivilegedControls() {
@@ -466,7 +482,7 @@
                 const session = getSession();
 
                 if (!canManageAdmins(session)) {
-                    alert('Only a logged-in admin or superuser can create another admin account.');
+                    alert('Only a logged-in admin or super-admin can create another admin account.');
                     goToScreen('login');
                     return;
                 }
@@ -475,7 +491,8 @@
                 nameGroup.style.display = 'block';
                 roleSelector.classList.add('hidden');
                 submitBtn.textContent = 'Create Admin';
-                passwordInput.required = true;
+                passwordInput.required = false;
+                passwordInput.value = DEFAULT_ADMIN_PASSWORD;
                 currentRole = 'admin';
                 updatePrivilegedControls();
                 return;
@@ -515,7 +532,7 @@
             }
         }
 
-        function findPrivilegedUserByEmail(email) {
+        function findUserByEmail(email) {
             return getStoredUsers().find(
                 (user) => user.email.toLowerCase() === email.toLowerCase()
             );
@@ -527,15 +544,14 @@
                 return;
             }
 
-            console.log(`Student sign up attempt: ${name}, ${email}`);
             alert(`Student sign up successful for ${email}.`);
             goToScreen('login');
         }
 
         function handlePrivilegedLogin(email, password) {
-            const user = findPrivilegedUserByEmail(email);
+            const user = findUserByEmail(email);
 
-            if (!user || (user.role !== 'admin' && user.role !== 'superuser') || user.password !== password) {
+            if (!user || (user.role !== 'admin' && user.role !== 'super-admin') || user.password !== password) {
                 alert('Admin login failed. Invalid email or password.');
                 return;
             }
@@ -546,7 +562,7 @@
                 role: user.role
             });
 
-            alert(`${user.role.charAt(0).toUpperCase() + user.role.slice(1)} login successful for ${email}.`);
+            alert(`${user.role} login successful for ${email}.`);
             redirectToDashboard();
         }
 
@@ -571,11 +587,11 @@
             handleStudentLogin(email);
         }
 
-        function handleCreateAdmin(email, password, name) {
+        function handleCreateAdmin(email, _password, name) {
             const session = getSession();
 
             if (!canManageAdmins(session)) {
-                alert('Only a logged-in admin or superuser can create another admin account.');
+                alert('Only a logged-in admin or super-admin can create another admin account.');
                 return;
             }
 
@@ -584,21 +600,21 @@
                 return;
             }
 
-            if (findPrivilegedUserByEmail(email)) {
-                alert('A privileged account with this email already exists.');
+            if (findUserByEmail(email)) {
+                alert('A user with this email already exists.');
                 return;
             }
 
             const users = getStoredUsers();
             users.push({
                 name,
-                email,
-                password,
+                email: email.toLowerCase(),
+                password: DEFAULT_ADMIN_PASSWORD,
                 role: 'admin'
             });
             saveUsers(users);
 
-            alert(`Admin account created successfully for ${email}.`);
+            alert(`Admin account created successfully for ${email}.\nTemporary password: ${DEFAULT_ADMIN_PASSWORD}`);
             goToScreen('login');
         }
 
