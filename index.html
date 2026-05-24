@@ -80,14 +80,14 @@
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-radius: 20px;
-            padding: 40px 35px;
+            padding: 36px 35px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
             animation: slideUp 0.6s ease-out;
         }
 
         .card h1 {
             font-size: 1.8rem;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
             color: #666666;
             text-align: center;
             font-weight: 700;
@@ -97,19 +97,13 @@
         .welcome-message {
             text-align: center;
             color: #666666;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
 
         .welcome-message h2 {
             font-size: 1.6rem;
             font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .welcome-message p {
-            color: #999999;
-            font-size: 0.95rem;
-            font-weight: 300;
+            margin-bottom: 0;
         }
 
         .option-buttons {
@@ -171,7 +165,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
-            margin-bottom: 25px;
+            margin-bottom: 22px;
             background: rgba(255, 255, 255, 0.1);
             padding: 6px;
             border-radius: 12px;
@@ -272,12 +266,12 @@
 
         @media (max-width: 480px) {
             .card {
-                padding: 35px 25px;
+                padding: 32px 25px;
             }
 
             .card h1 {
                 font-size: 1.5rem;
-                margin-bottom: 20px;
+                margin-bottom: 18px;
             }
         }
     </style>
@@ -291,7 +285,6 @@
             <div class="card">
                 <div class="welcome-message">
                     <h2>Induction</h2>
-                    <p>Let's Get Started!</p>
                 </div>
 
                 <div class="option-buttons">
@@ -315,17 +308,17 @@
                 <form id="authForm" onsubmit="handleSubmit(event)">
                     <div class="form-group" id="nameGroup" style="display: none;">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" placeholder="Enter Full name" />
+                        <input type="text" id="name" placeholder="Enter full name" />
                     </div>
 
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="Enter Email" required />
+                        <input type="email" id="email" placeholder="Enter email" required />
                     </div>
 
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="Enter Password" required />
+                        <input type="password" id="password" placeholder="Enter password" required />
                     </div>
 
                     <button type="submit" class="primary-btn" id="submitBtn">Login</button>
