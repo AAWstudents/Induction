@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <title>Induction - Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <style>
         * {
@@ -158,6 +158,10 @@
             transform: translateY(0);
         }
 
+        .back-option-btn {
+            margin-bottom: 15px;
+        }
+
         .secondary-btn {
             margin-top: 12px;
             padding: 11px;
@@ -166,27 +170,6 @@
 
         .secondary-btn.show {
             display: block;
-        }
-
-        .back-btn {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #999999;
-            padding: 10px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            text-align: center;
-            font-size: 0.9rem;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 500;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #777777;
         }
 
         .role-selector {
@@ -285,6 +268,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -314,7 +298,9 @@
         <div class="welcome-screen" id="welcomeScreen">
             <div class="card">
                 <div class="welcome-message">
-                    <h2>Welcome</h2>
+                    <h2>Induction</h2>
+                    <p>Let's Get Started!</p>
+                </div>
 
                 <div class="option-buttons">
                     <button class="option-btn" type="button" onclick="goToScreen('login')">Login</button>
@@ -324,7 +310,7 @@
         </div>
 
         <div class="auth-screen" id="authScreen">
-            <button class="back-btn" type="button" onclick="goBack()">← Back</button>
+            <button class="option-btn back-option-btn" type="button" onclick="goBack()">← Back</button>
 
             <div class="card">
                 <h1 id="screenTitle">Login</h1>
@@ -436,16 +422,9 @@
             document.getElementById('authForm').reset();
         }
 
-        function setRole(role) {
-            currentRole = role;
-
-            document.querySelectorAll('.role-btn').forEach((button) => {
-                button.classList.toggle('active', button.textContent.trim().toLowerCase() === role);
-            });
-        }
-
         function setDefaultRole() {
-            selectRole('student', document.querySelectorAll('.role-btn')[0]);
+            const firstRoleButton = document.querySelectorAll('.role-btn')[0];
+            selectRole('student', firstRoleButton);
         }
 
         function showSessionStatus(message = '') {
@@ -491,8 +470,8 @@
             const passwordInput = document.getElementById('password');
 
             if (mode === 'signup') {
-                screenTitle.textContent = 'Sign Up';
-                screenSubtitle.textContent = 'Create Student Account';
+                screenTitle.textContent = 'Student Sign Up';
+                screenSubtitle.textContent = 'Create Your Student Account';
                 nameGroup.style.display = 'block';
                 roleSelector.classList.add('hidden');
                 submitBtn.textContent = 'Sign Up';
@@ -664,6 +643,7 @@
             handleLogin(email, password);
         }
 
+        getStoredUsers();
         updatePrivilegedControls();
     </script>
 </body>
