@@ -1,3 +1,4 @@
+<!-- /dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -105,13 +106,13 @@
             position: absolute;
             top: 54px;
             right: 0;
-            width: 260px;
-            background: rgba(255, 255, 255, 0.92);
+            width: 290px;
+            background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.65);
-            border-radius: 18px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 18px;
             box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
             display: none;
         }
@@ -121,7 +122,7 @@
         }
 
         .profile-name {
-            font-size: 0.95rem;
+            font-size: 0.98rem;
             font-weight: 600;
             color: #666666;
             margin-bottom: 4px;
@@ -131,20 +132,120 @@
         .profile-meta {
             font-size: 0.82rem;
             color: #9a9a9a;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             word-break: break-word;
         }
 
-        .logout-btn {
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .profile-card {
+            background: rgba(100, 150, 255, 0.08);
+            border: 1px solid rgba(100, 150, 255, 0.12);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .student-progress-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .progress-copy h3 {
+            font-size: 0.9rem;
+            color: #666666;
+            margin-bottom: 4px;
+        }
+
+        .progress-copy p {
+            font-size: 0.8rem;
+            color: #909090;
+            line-height: 1.5;
+        }
+
+        .donut-wrap {
+            width: 76px;
+            height: 76px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            position: relative;
+        }
+
+        .donut-ring {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            position: relative;
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(circle at center, #ffffff 55%, transparent 56%),
+                conic-gradient(
+                    from 180deg,
+                    rgba(100, 150, 255, 0.9) 0deg,
+                    rgba(150, 100, 255, 0.85) var(--progress-deg),
+                    rgba(228, 234, 245, 1) var(--progress-deg),
+                    rgba(228, 234, 245, 1) 360deg
+                );
+            transform: rotate(180deg);
+        }
+
+        .donut-ring::after {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .donut-label {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #666666;
+            transform: none;
+            z-index: 2;
+        }
+
+        .profile-action {
             width: 100%;
             border: none;
             border-radius: 12px;
-            padding: 11px 14px;
+            padding: 12px 14px;
             cursor: pointer;
             font-family: inherit;
             font-weight: 600;
             color: #666666;
             background: rgba(100, 150, 255, 0.12);
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .profile-action:hover {
+            background: rgba(100, 150, 255, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .logout-btn {
+            background: rgba(255, 120, 120, 0.12);
+            color: #7a5a5a;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 120, 120, 0.18);
         }
 
         .sidebar-overlay {
@@ -306,6 +407,14 @@
             .hero-card h1 {
                 font-size: 1.45rem;
             }
+
+            .profile-menu {
+                width: 260px;
+            }
+
+            .student-progress-card {
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -318,9 +427,15 @@
             </div>
 
             <nav class="nav-list">
-                <button class="nav-item active" type="button" data-view="induction" onclick="setView('induction', this)">Induction</button>
-                <button class="nav-item" type="button" data-view="workbook" onclick="setView('workbook', this)">Workbook</button>
-                <button class="nav-item" type="button" data-view="feedback" onclick="setView('feedback', this)">Feedback</button>
+                <button class="nav-item active" type="button" data-view="induction" onclick="setView('induction', this)">
+                    Induction
+                </button>
+                <button class="nav-item" type="button" data-view="workbook" onclick="setView('workbook', this)">
+                    Workbook
+                </button>
+                <button class="nav-item" type="button" data-view="feedback" onclick="setView('feedback', this)">
+                    Feedback
+                </button>
             </nav>
         </aside>
 
@@ -344,7 +459,7 @@
                 <div class="profile-menu" id="profileMenu">
                     <div class="profile-name" id="profileName">User</div>
                     <div class="profile-meta" id="profileMeta">user@example.com</div>
-                    <button class="logout-btn" type="button" onclick="logout()">Logout</button>
+                    <div class="profile-section" id="profileContent"></div>
                 </div>
             </div>
         </header>
@@ -380,27 +495,54 @@
                 title: 'Induction',
                 description: 'Welcome to your induction dashboard. Use this section to review onboarding tasks, guidance, and starting information.',
                 cards: [
-                    { title: 'Overview', text: 'Read your induction materials and keep track of required onboarding steps.' },
-                    { title: 'Checklist', text: 'Use this section for policy review, orientation tasks, and important updates.' },
-                    { title: 'Progress', text: 'You can later connect this area to real completion tracking from your backend.' }
+                    {
+                        title: 'Overview',
+                        text: 'Read your induction materials and keep track of required onboarding steps.'
+                    },
+                    {
+                        title: 'Checklist',
+                        text: 'Use this section for policy review, orientation tasks, and important updates.'
+                    },
+                    {
+                        title: 'Progress',
+                        text: 'You can later connect this area to real completion tracking from your backend.'
+                    }
                 ]
             },
             workbook: {
                 title: 'Workbook',
                 description: 'Open your workbook area to continue exercises, assignments, and saved progress.',
                 cards: [
-                    { title: 'Assignments', text: 'List workbook tasks, learning modules, or daily activities here.' },
-                    { title: 'Saved Work', text: 'Connect this section to your database to show submitted or draft workbook items.' },
-                    { title: 'Resources', text: 'Add documents, examples, or guided exercises for students or staff.' }
+                    {
+                        title: 'Assignments',
+                        text: 'List workbook tasks, learning modules, or daily activities here.'
+                    },
+                    {
+                        title: 'Saved Work',
+                        text: 'Connect this section to your database to show submitted or draft workbook items.'
+                    },
+                    {
+                        title: 'Resources',
+                        text: 'Add documents, examples, or guided exercises for students or staff.'
+                    }
                 ]
             },
             feedback: {
                 title: 'Feedback',
                 description: 'Use this section to review or submit feedback about your induction and learning experience.',
                 cards: [
-                    { title: 'Submit Feedback', text: 'Add a form here for users to share comments, issues, or suggestions.' },
-                    { title: 'Recent Responses', text: 'You can later display previous feedback entries from your backend.' },
-                    { title: 'Improvements', text: 'Track what has been suggested and what changes were made over time.' }
+                    {
+                        title: 'Submit Feedback',
+                        text: 'Add a form here for users to share comments, issues, or suggestions.'
+                    },
+                    {
+                        title: 'Recent Responses',
+                        text: 'You can later display previous feedback entries from your backend.'
+                    },
+                    {
+                        title: 'Improvements',
+                        text: 'Track what has been suggested and what changes were made over time.'
+                    }
                 ]
             }
         };
@@ -433,10 +575,71 @@
             return 'U';
         }
 
+        function getStudentProgress(session) {
+            const savedProgress = Number(localStorage.getItem(`workbookProgress:${session.email}`));
+
+            if (Number.isFinite(savedProgress) && savedProgress >= 0 && savedProgress <= 100) {
+                return savedProgress;
+            }
+
+            return session.role === 'student' ? 68 : 0;
+        }
+
+        function createStudentProfileMarkup(progress) {
+            const progressDegrees = Math.round((progress / 100) * 360);
+
+            return `
+                <div class="profile-card student-progress-card">
+                    <div class="donut-wrap">
+                        <div class="donut-ring" style="--progress-deg: ${progressDegrees}deg;"></div>
+                        <div class="donut-label">${progress}%</div>
+                    </div>
+                    <div class="progress-copy">
+                        <h3>Workbook Progress</h3>
+                        <p>Track completed workbook tasks and continue where you left off.</p>
+                    </div>
+                </div>
+
+                <button class="profile-action" type="button" onclick="goToWorkbookProgress()">
+                    View Workbook Progress
+                </button>
+
+                <button class="profile-action logout-btn" type="button" onclick="logout()">
+                    Logout
+                </button>
+            `;
+        }
+
+        function createAdminProfileMarkup() {
+            return `
+                <button class="profile-action" type="button" onclick="goToStudentAccounts()">
+                    Student Accounts / Progress
+                </button>
+
+                <button class="profile-action" type="button" onclick="goToCreateUserAccount()">
+                    Create Another User Account
+                </button>
+
+                <button class="profile-action logout-btn" type="button" onclick="logout()">
+                    Logout
+                </button>
+            `;
+        }
+
         function populateProfile(session) {
             document.getElementById('profileBtn').textContent = getInitials(session.name, session.email);
             document.getElementById('profileName').textContent = session.name || session.role;
             document.getElementById('profileMeta').textContent = `${session.email} • ${session.role}`;
+
+            const profileContent = document.getElementById('profileContent');
+
+            if (session.role === 'admin') {
+                profileContent.innerHTML = createAdminProfileMarkup();
+                return;
+            }
+
+            const progress = getStudentProgress(session);
+            profileContent.innerHTML = createStudentProfileMarkup(progress);
         }
 
         function renderCards(cards) {
@@ -497,6 +700,19 @@
 
         function closeProfileMenu() {
             document.getElementById('profileMenu').classList.remove('show');
+        }
+
+        function goToWorkbookProgress() {
+            setView('workbook');
+            closeProfileMenu();
+        }
+
+        function goToStudentAccounts() {
+            window.location.href = 'student-accounts.html';
+        }
+
+        function goToCreateUserAccount() {
+            window.location.href = 'create-user.html';
         }
 
         function logout() {
