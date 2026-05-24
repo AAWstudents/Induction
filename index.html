@@ -322,6 +322,11 @@
                         <input type="password" id="password" placeholder="Enter Password" required />
                     </div>
 
+                    <div class="form-group" id="confirmPasswordGroup" style="display: none;">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+                    </div>
+
                     <button type="submit" class="primary-btn" id="submitBtn">Login</button>
                 </form>
 
@@ -346,13 +351,15 @@
                 name: 'System Admin',
                 email: 'admin@induction.com',
                 password: DEFAULT_ADMIN_PASSWORD,
-                role: 'admin'
+                role: 'admin',
+                mustChangePassword: false
             },
             {
                 name: 'Pandora Burns',
                 email: 'pandoraburns@btinternet.com',
                 password: DEFAULT_ADMIN_PASSWORD,
-                role: 'super-admin'
+                role: 'super-admin',
+                mustChangePassword: false
             }
         ];
 
@@ -371,7 +378,10 @@
                 const parsedUsers = JSON.parse(rawUsers);
 
                 if (Array.isArray(parsedUsers)) {
-                    return parsedUsers;
+                    return parsedUsers.map((user) => ({
+                        mustChangePassword: false,
+                        ...user
+                    }));
                 }
             } catch (error) {
                 console.error('Failed to parse stored users.', error);
@@ -407,6 +417,7 @@
 
         function clearSession() {
             localStorage.removeItem('inductionSession');
+            localStorage.removeItem('pendingPasswordSetup');
         }
 
         function resetForm() {
@@ -454,6 +465,28 @@
             window.location.href = 'dashboard.html';
         }
 
+        function configurePasswordSetupScreen(email) {
+            currentMode = 'set-password';
+            resetForm();
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.add('active');
+
+            document.getElementById('screenTitle').textContent = 'Create Password';
+            document.getElementById('nameGroup').style.display = 'none';
+            document.getElementById('roleSelector').classList.add('hidden');
+            document.getElementById('submitBtn').textContent = 'Save Password';
+            document.getElementById('email').value = email;
+            document.getElementById('email').readOnly = true;
+            document.getElementById('password').value = '';
+            document.getElementById('password').placeholder = 'Create New Password';
+            document.getElementById('password').required = true;
+            document.getElementById('confirmPasswordGroup').style.display = 'block';
+            document.getElementById('confirmPassword').required = true;
+            showSessionStatus('Create your own password before continuing.');
+            updatePrivilegedControls();
+        }
+
         function goToScreen(mode) {
             currentMode = mode;
             resetForm();
@@ -466,6 +499,15 @@
             const roleSelector = document.getElementById('roleSelector');
             const submitBtn = document.getElementById('submitBtn');
             const passwordInput = document.getElementById('password');
+            const emailInput = document.getElementById('email');
+            const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+
+            emailInput.readOnly = false;
+            passwordInput.placeholder = 'Enter Password';
+            confirmPasswordGroup.style.display = 'none';
+            confirmPasswordInput.required = false;
+            showSessionStatus('');
 
             if (mode === 'signup') {
                 screenTitle.textContent = 'Sign Up';
@@ -493,7 +535,9 @@
                 submitBtn.textContent = 'Create Admin';
                 passwordInput.required = false;
                 passwordInput.value = DEFAULT_ADMIN_PASSWORD;
+                passwordInput.placeholder = 'Temporary Password';
                 currentRole = 'admin';
+                showSessionStatus(`Temporary password: ${DEFAULT_ADMIN_PASSWORD}`);
                 updatePrivilegedControls();
                 return;
             }
@@ -508,11 +552,17 @@
         }
 
         function goBack() {
+            clearSession();
             document.getElementById('authScreen').classList.remove('active');
             document.getElementById('welcomeScreen').classList.remove('hidden');
             currentMode = 'login';
             resetForm();
             setDefaultRole();
+            document.getElementById('email').readOnly = false;
+            document.getElementById('password').placeholder = 'Enter Password';
+            document.getElementById('confirmPasswordGroup').style.display = 'none';
+            document.getElementById('confirmPassword').required = false;
+            showSessionStatus('');
             updatePrivilegedControls();
         }
 
@@ -538,6 +588,13 @@
             );
         }
 
+        function updateUser(updatedUser) {
+            const users = getStoredUsers().map((user) =>
+                user.email.toLowerCase() === updatedUser.email.toLowerCase() ? updatedUser : user
+            );
+            saveUsers(users);
+        }
+
         function handleStudentSignup(email, password, name) {
             if (!name) {
                 alert('Please enter your full name.');
@@ -553,6 +610,17 @@
 
             if (!user || (user.role !== 'admin' && user.role !== 'super-admin') || user.password !== password) {
                 alert('Admin login failed. Invalid email or password.');
+                return;
+            }
+
+            if (user.mustChangePassword) {
+                localStorage.setItem(
+                    'pendingPasswordSetup',
+                    JSON.stringify({
+                        email: user.email
+                    })
+                );
+                configurePasswordSetupScreen(user.email);
                 return;
             }
 
@@ -610,12 +678,71 @@
                 name,
                 email: email.toLowerCase(),
                 password: DEFAULT_ADMIN_PASSWORD,
-                role: 'admin'
+                role: 'admin',
+                mustChangePassword: true
             });
             saveUsers(users);
 
             alert(`Admin account created successfully for ${email}.\nTemporary password: ${DEFAULT_ADMIN_PASSWORD}`);
             goToScreen('login');
+        }
+
+        function handlePasswordSetup(password, confirmPassword) {
+            const pendingRaw = localStorage.getItem('pendingPasswordSetup');
+
+            if (!pendingRaw) {
+                alert('Password setup session expired. Please log in again.');
+                goToScreen('login');
+                return;
+            }
+
+            let pendingUser;
+
+            try {
+                pendingUser = JSON.parse(pendingRaw);
+            } catch (error) {
+                console.error('Failed to parse pending password setup.', error);
+                localStorage.removeItem('pendingPasswordSetup');
+                goToScreen('login');
+                return;
+            }
+
+            const user = findUserByEmail(pendingUser.email);
+
+            if (!user) {
+                alert('User account was not found.');
+                localStorage.removeItem('pendingPasswordSetup');
+                goToScreen('login');
+                return;
+            }
+
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            const updatedUser = {
+                ...user,
+                password,
+                mustChangePassword: false
+            };
+
+            updateUser(updatedUser);
+            localStorage.removeItem('pendingPasswordSetup');
+
+            saveSession({
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role
+            });
+
+            alert('Password created successfully.');
+            redirectToDashboard();
         }
 
         function handleSubmit(event) {
@@ -624,6 +751,7 @@
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
             if (currentMode === 'signup') {
                 handleStudentSignup(email, password, name);
@@ -635,11 +763,36 @@
                 return;
             }
 
+            if (currentMode === 'set-password') {
+                handlePasswordSetup(password, confirmPassword);
+                return;
+            }
+
             handleLogin(email, password);
+        }
+
+        function restorePendingPasswordSetup() {
+            const pendingRaw = localStorage.getItem('pendingPasswordSetup');
+
+            if (!pendingRaw) {
+                return;
+            }
+
+            try {
+                const pendingUser = JSON.parse(pendingRaw);
+
+                if (pendingUser && pendingUser.email) {
+                    configurePasswordSetupScreen(pendingUser.email);
+                }
+            } catch (error) {
+                console.error('Failed to restore pending password setup.', error);
+                localStorage.removeItem('pendingPasswordSetup');
+            }
         }
 
         getStoredUsers();
         updatePrivilegedControls();
+        restorePendingPasswordSetup();
     </script>
 </body>
 </html>
